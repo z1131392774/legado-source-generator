@@ -8,10 +8,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
-const POPUP_FILES = [
-  'src/popup/popup.js',
-  'src-firefox/popup/popup.js',
-];
+const POPUP_FILES = ['src/popup/popup.js', 'src-firefox/popup/popup.js'];
 
 function readProjectFile(file) {
   return fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -35,11 +32,7 @@ function assertNextPageQuickInsertWired(file) {
     /function isNextPageQuickInsertField\(fieldKey\)/,
     `${file} uses a field gate for rendering the shortcut`
   );
-  assert.match(
-    source,
-    /id="quickNextPageRuleBtn"/,
-    `${file} renders the quick insert button`
-  );
+  assert.match(source, /id="quickNextPageRuleBtn"/, `${file} renders the quick insert button`);
   assert.match(
     source,
     /id="quickNextPageRuleBtn"[^>]*>预设规则<\/button>/,

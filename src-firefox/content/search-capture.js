@@ -1,6 +1,6 @@
 /**
  * Content Script - Search URL Capture
- * 
+ *
  * Strategy: User types "我的" into the search box → clicks the site's search button →
  * we intercept the outgoing request and replace "我的" with {{key}}.
  */
@@ -23,14 +23,9 @@
   // SessionStorage key for pending capture across page navigations
   const PENDING_CAPTURE_KEY = 'legado_pending_search_capture';
 
-
-
   function savePendingCapture(data) {
     try {
-      sessionStorage.setItem(PENDING_CAPTURE_KEY, JSON.stringify({
-        ...data,
-        timestamp: Date.now(),
-      }));
+      sessionStorage.setItem(PENDING_CAPTURE_KEY, JSON.stringify({ ...data, timestamp: Date.now() }));
     } catch (e) {}
   }
 
@@ -39,8 +34,6 @@
       sessionStorage.removeItem(PENDING_CAPTURE_KEY);
     } catch (e) {}
   }
-
-
 
   /**
    * Detect charset from page <meta> tags
@@ -88,7 +81,7 @@
 
     // Collect ALL text inputs in the form — no selection needed
     const inputs = [];
-    form.querySelectorAll('input').forEach(inp => {
+    form.querySelectorAll('input').forEach((inp) => {
       const type = inp.type || 'text';
       if (type === 'hidden' || type === 'submit' || type === 'button' || type === 'reset') return;
       const rect = inp.getBoundingClientRect();
@@ -99,10 +92,6 @@
 
     return { form, inputsToFill: inputs, isLink: false, linkUrl: null };
   }
-
-
-
-
 
   /**
    * 仅用于规则模板拼接，真实请求编码交给浏览器原生表单提交。
@@ -135,7 +124,7 @@
       const parsed = new URL(linkUrl, window.location.href);
       const keys = Array.from(parsed.searchParams.keys());
       const preferred = ['q', 'query', 'wd', 'word', 'key', 'kw', 'keyword', 'search', 'searchkey'];
-      let targetKey = keys.find(k => preferred.includes(k.toLowerCase()));
+      let targetKey = keys.find((k) => preferred.includes(k.toLowerCase()));
       if (!targetKey && keys.length === 1) targetKey = keys[0];
       if (targetKey) {
         parsed.searchParams.set(targetKey, '{{key}}');
@@ -172,14 +161,14 @@
     if (!input) return false;
     const matches = input.match(/(?:%[0-9A-Fa-f]{2})+/g);
     if (!matches) return false;
-    return matches.some(seg => decodePercentBytes(seg, charset).includes(PRESET_KEYWORD));
+    return matches.some((seg) => decodePercentBytes(seg, charset).includes(PRESET_KEYWORD));
   }
 
   function replaceKeywordInFormEncodedString(text, charset) {
     if (!text) return text;
     const parts = text.split('&');
     let replaced = false;
-    const mapped = parts.map(part => {
+    const mapped = parts.map((part) => {
       const eq = part.indexOf('=');
       if (eq < 0) return part;
       const key = part.slice(0, eq);
@@ -216,10 +205,12 @@
   function containsKnownKeywordToken(input, charset) {
     if (!input) return false;
     const utf8Encoded = encodeURIComponent(PRESET_KEYWORD);
-    return input.includes('{{key}}') ||
+    return (
+      input.includes('{{key}}') ||
       input.includes(PRESET_KEYWORD) ||
       input.includes(utf8Encoded) ||
-      containsKeywordInPercentEncoded(input, charset);
+      containsKeywordInPercentEncoded(input, charset)
+    );
   }
 
   /**
@@ -228,7 +219,7 @@
   function detectSearchForms() {
     const forms = document.querySelectorAll('form');
     const results = [];
-    forms.forEach(form => {
+    forms.forEach((form) => {
       const action = form.getAttribute('action') || form.action || '';
       const method = (form.getAttribute('method') || 'GET').toUpperCase();
       const acceptCharset = form.getAttribute('accept-charset') || '';
@@ -240,7 +231,7 @@
         method,
         charset: acceptCharset || detectPageCharset(),
         hasSearchInput: inputs.length > 0,
-        hasSelect: selects.length > 0,
+        hasSelect: selects.length > 0
       });
     });
     return results;
@@ -257,28 +248,28 @@
     let body = '';
 
     formData.forEach((value, key) => {
-      const encodedKey = encodeURIComponent(key);  // keys are always UTF-8 safe
+      const encodedKey = encodeURIComponent(key); // keys are always UTF-8 safe
       const encodedValue = value === PRESET_KEYWORD ? '{{key}}' : encodeTemplateValue(value);
       params.push(encodedKey + '=' + encodedValue);
     });
 
     // Defensive: also explicitly collect <select> and <input type="hidden">
     // inside the form. Some sites may have fields that FormData misses.
-    form.querySelectorAll('select[name], input[type="hidden"][name]').forEach(el => {
+    form.querySelectorAll('select[name], input[type="hidden"][name]').forEach((el) => {
       const key = el.name;
       const value = el.value;
       if (value === undefined || value === null) return;
       const encodedKey = encodeURIComponent(key);
       const encodedValue = value === PRESET_KEYWORD ? '{{key}}' : encodeTemplateValue(value);
       const param = encodedKey + '=' + encodedValue;
-      if (!params.some(p => p.startsWith(encodedKey + '='))) {
+      if (!params.some((p) => p.startsWith(encodedKey + '='))) {
         params.push(param);
       }
     });
 
     // Also collect <select> elements outside the form but on the page.
     // Some sites place selects outside the form and read them via JS.
-    document.querySelectorAll('select[name]').forEach(select => {
+    document.querySelectorAll('select[name]').forEach((select) => {
       if (form.contains(select)) return;
       const key = select.name;
       const value = select.value;
@@ -286,24 +277,17 @@
       const encodedKey = encodeURIComponent(key);
       const encodedValue = value === PRESET_KEYWORD ? '{{key}}' : encodeTemplateValue(value);
       const param = encodedKey + '=' + encodedValue;
-      if (!params.some(p => p.startsWith(encodedKey + '='))) {
+      if (!params.some((p) => p.startsWith(encodedKey + '='))) {
         params.push(param);
       }
     });
 
     const queryString = params.join('&');
     if (method === 'GET') {
-      return {
-        url: actionUrl + (actionUrl.includes('?') ? '&' : '?') + queryString,
-        encodedKeyword,
-      };
+      return { url: actionUrl + (actionUrl.includes('?') ? '&' : '?') + queryString, encodedKeyword };
     } else {
       body = queryString;
-      return {
-        url: actionUrl,
-        body,
-        encodedKeyword,
-      };
+      return { url: actionUrl, body, encodedKeyword };
     }
   }
 
@@ -316,14 +300,7 @@
     stopUrlPolling();
     clearPendingCapture();
 
-    chrome.runtime.sendMessage({
-      action: 'searchCaptured',
-      method,
-      url: urlWithPlaceholder,
-      charset,
-      body,
-      forms,
-    });
+    chrome.runtime.sendMessage({ action: 'searchCaptured', method, url: urlWithPlaceholder, charset, body, forms });
   }
 
   function submitFormAsGetInNewTab(form) {
@@ -353,7 +330,9 @@
       // - <button type="submit">, <input type="submit">, <input type="button">
       // - <a> links that might trigger search
       const target = e.target;
-      const searchButton = target.closest('button, input[type="submit"], input[type="button"], a[href], [role="button"]');
+      const searchButton = target.closest(
+        'button, input[type="submit"], input[type="button"], a[href], [role="button"]'
+      );
       if (!searchButton) return;
 
       if (!lockedSearchButton) {
@@ -369,7 +348,7 @@
           body: '',
           charset: detectPageCharset(),
           forms: detectSearchForms(),
-          originalUrl: window.location.href,
+          originalUrl: window.location.href
         });
 
         console.log('[search-capture] Armed pending capture for non-form search button');
@@ -387,7 +366,7 @@
         type: searchButton.type,
         text: searchButton.textContent?.trim(),
         value: searchButton.value,
-        isLink: searchInfo.isLink,
+        isLink: searchInfo.isLink
       });
 
       if (searchInfo.isLink) {
@@ -469,11 +448,7 @@
       fetchHijackByDefine = false;
     } catch (e) {
       try {
-        Object.defineProperty(window, 'fetch', {
-          value: wrappedFetch,
-          configurable: true,
-          writable: true,
-        });
+        Object.defineProperty(window, 'fetch', { value: wrappedFetch, configurable: true, writable: true });
         fetchHijacked = true;
         fetchHijackByDefine = true;
       } catch (e2) {
@@ -560,7 +535,7 @@
           url: urlWithPlaceholder,
           charset: charset,
           body: bodyWithPlaceholder,
-          forms: forms,
+          forms: forms
         });
         // Don't prevent default — form submits with filled value.
       } else {
@@ -590,7 +565,7 @@
             url: urlWithPlaceholder,
             charset,
             body: bodyWithPlaceholder,
-            forms,
+            forms
           });
         }
       }
@@ -608,8 +583,21 @@
     if (!captureActive) return;
 
     const urlLower = url.toLowerCase();
-    const skipExtensions = ['.js', '.css', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf', '.map'];
-    if (skipExtensions.some(ext => urlLower.includes(ext))) return;
+    const skipExtensions = [
+      '.js',
+      '.css',
+      '.png',
+      '.jpg',
+      '.jpeg',
+      '.gif',
+      '.svg',
+      '.ico',
+      '.woff',
+      '.woff2',
+      '.ttf',
+      '.map'
+    ];
+    if (skipExtensions.some((ext) => urlLower.includes(ext))) return;
     if (urlLower.startsWith('/static/') || urlLower.includes('/assets/')) return;
 
     const charset = detectPageCharset();
@@ -627,11 +615,7 @@
     if (fetchHijacked) {
       try {
         if (fetchHijackByDefine) {
-          Object.defineProperty(window, 'fetch', {
-            value: originalFetch,
-            configurable: true,
-            writable: true,
-          });
+          Object.defineProperty(window, 'fetch', { value: originalFetch, configurable: true, writable: true });
         } else {
           window.fetch = originalFetch;
         }
@@ -658,7 +642,7 @@
       if (currentUrl !== originalUrl) {
         const urlWithPlaceholder = replaceKeywordInCapturedUrl(currentUrl, charset);
         const forms = detectSearchForms();
-        const formInfo = forms.find(f => f.hasSearchInput) || forms[0];
+        const formInfo = forms.find((f) => f.hasSearchInput) || forms[0];
         const method = formInfo ? formInfo.method : 'GET';
         sendCapturedData(method, urlWithPlaceholder, '', charset, forms);
       }
@@ -670,7 +654,7 @@
       if (!captureActive) return;
       const currentUrl = window.location.href;
       const forms = detectSearchForms();
-      const formInfo = forms.find(f => f.hasSearchInput) || forms[0];
+      const formInfo = forms.find((f) => f.hasSearchInput) || forms[0];
       const method = formInfo ? formInfo.method : 'GET';
       savePendingCapture({
         mode: 'await-navigation',
@@ -679,7 +663,7 @@
         charset,
         forms,
         originalUrl,
-        url: currentUrl !== originalUrl ? replaceKeywordInCapturedUrl(currentUrl, charset) : '',
+        url: currentUrl !== originalUrl ? replaceKeywordInCapturedUrl(currentUrl, charset) : ''
       });
     };
     window.addEventListener('beforeunload', urlPollBeforeUnloadHandler);
@@ -750,10 +734,7 @@
         sendResponse({ success: true });
         break;
       case 'getSearchForms':
-        sendResponse({
-          forms: detectSearchForms(),
-          charset: detectPageCharset(),
-        });
+        sendResponse({ forms: detectSearchForms(), charset: detectPageCharset() });
         break;
       default:
         sendResponse({ success: false });
@@ -773,7 +754,12 @@
       // Only recover if captured within the last 10 seconds
       if (data.timestamp && Date.now() - data.timestamp < 10000) {
         let recoveredUrl = data.url || '';
-        if (!recoveredUrl && data.mode === 'await-navigation' && data.originalUrl && window.location.href !== data.originalUrl) {
+        if (
+          !recoveredUrl &&
+          data.mode === 'await-navigation' &&
+          data.originalUrl &&
+          window.location.href !== data.originalUrl
+        ) {
           recoveredUrl = replaceKeywordInCapturedUrl(window.location.href, data.charset || detectPageCharset());
         }
         if (recoveredUrl) {
@@ -783,12 +769,11 @@
             url: recoveredUrl,
             charset: data.charset || detectPageCharset(),
             body: data.body || '',
-            forms: data.forms || [],
+            forms: data.forms || []
           });
         }
       }
       sessionStorage.removeItem(PENDING_CAPTURE_KEY);
     }
   } catch (e) {}
-
 })();

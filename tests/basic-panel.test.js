@@ -1,12 +1,13 @@
 const assert = require('node:assert/strict');
 
-global.window = {
-  getExploreJsonString: () => '',
-};
+global.window = { getExploreJsonString: () => '' };
 
 const RULE_TYPES = {
-  explore: { fields: [] }, search: { fields: [] },
-  bookInfo: { fields: [] }, toc: { fields: [] }, content: { fields: [] },
+  explore: { fields: [] },
+  search: { fields: [] },
+  bookInfo: { fields: [] },
+  toc: { fields: [] },
+  content: { fields: [] }
 };
 const CF_LOGIN_CHECK_JS = 'var x = result;';
 
@@ -17,7 +18,7 @@ let state = {
     search: { fields: {}, fieldStates: {} },
     bookInfo: { fields: {}, fieldStates: {} },
     toc: { fields: {}, fieldStates: {} },
-    content: { fields: {}, fieldStates: {} },
+    content: { fields: {}, fieldStates: {} }
   },
   exploreUrl: '',
   searchUrl: '',
@@ -26,18 +27,18 @@ let state = {
   bookSourceName: '测试源',
   bookSourceComment: '这是一个测试注释',
   headerItems: [],
-  loginCheckJs: CF_LOGIN_CHECK_JS,
+  loginCheckJs: CF_LOGIN_CHECK_JS
 };
 
 function buildRuleSection(type) {
   const rule = state.rules[type];
   const fields = RULE_TYPES[type].fields;
   const section = {};
-  fields.forEach(f => {
+  fields.forEach((f) => {
     const fd = rule.fields[f.key];
     if (fd && fd.value) section[f.key] = fd.value;
   });
-  return Object.keys(section).length > 0 ? section : "";
+  return Object.keys(section).length > 0 ? section : '';
 }
 
 function generateJson() {
@@ -52,19 +53,19 @@ function generateJson() {
     bookSourceUrl: (state.bookSourceUrl || '').trim(),
     bookSourceName: (state.bookSourceName || '').trim(),
     searchUrl: state.searchUrl || '',
-    exploreUrl: exploreResult,
+    exploreUrl: exploreResult
   };
 
   const items = Array.isArray(state.headerItems) ? state.headerItems : [];
   const header = {};
-  items.forEach(item => {
+  items.forEach((item) => {
     const key = (item?.key || '').trim();
     const value = (item?.value || '').trim();
     if (key && value) header[key] = value;
   });
-  result.header = Object.keys(header).length > 0 ? header : "";
-  result.loginCheckJs = state.loginCheckJs?.trim() || "";
-  result.bookSourceComment = state.bookSourceComment?.trim() || "";
+  result.header = Object.keys(header).length > 0 ? header : '';
+  result.loginCheckJs = state.loginCheckJs?.trim() || '';
+  result.bookSourceComment = state.bookSourceComment?.trim() || '';
 
   return result;
 }

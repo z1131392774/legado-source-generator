@@ -3,7 +3,7 @@ const EXPLORE_PROPS = [
   'layout_flexShrink',
   'layout_alignSelf',
   'layout_flexBasisPercent',
-  'layout_wrapBefore',
+  'layout_wrapBefore'
 ];
 
 let exploreItems = [];
@@ -35,27 +35,31 @@ function bindExploreEvents() {
   if (addItemBtn) addItemBtn.addEventListener('click', () => addExploreItem({ title: '新分类', url: '' }));
 
   const addSepBtn = document.getElementById('exploreAddSeparatorBtn');
-  if (addSepBtn) addSepBtn.addEventListener('click', () => addExploreItem({ title: '分隔', url: '', isSeparator: true }));
+  if (addSepBtn)
+    addSepBtn.addEventListener('click', () => addExploreItem({ title: '分隔', url: '', isSeparator: true }));
 
   const exportBtn = document.getElementById('exploreExportBtn');
   if (exportBtn) exportBtn.addEventListener('click', exportExploreJson);
 
   const clearBtn = document.getElementById('exploreClearBtn');
-  if (clearBtn) clearBtn.addEventListener('click', () => {
-    if (exploreItems.length && !confirm('确定要清空所有发现页URL吗？')) return;
-    window.clearExploreEditor();
-  });
+  if (clearBtn)
+    clearBtn.addEventListener('click', () => {
+      if (exploreItems.length && !confirm('确定要清空所有发现页URL吗？')) return;
+      window.clearExploreEditor();
+    });
 
   const copyBtn = document.getElementById('exploreCopyBtn');
-  if (copyBtn) copyBtn.addEventListener('click', () => {
-    const textarea = document.getElementById('exploreJsonOutput');
-    navigator.clipboard.writeText(textarea.value).then(() => window.showToast('已复制到剪贴板', 'info'));
-  });
+  if (copyBtn)
+    copyBtn.addEventListener('click', () => {
+      const textarea = document.getElementById('exploreJsonOutput');
+      navigator.clipboard.writeText(textarea.value).then(() => window.showToast('已复制到剪贴板', 'info'));
+    });
 
   const closeBtn = document.getElementById('exploreCloseModalBtn');
-  if (closeBtn) closeBtn.addEventListener('click', () => {
-    document.getElementById('exploreJsonModal').classList.add('hidden');
-  });
+  if (closeBtn)
+    closeBtn.addEventListener('click', () => {
+      document.getElementById('exploreJsonModal').classList.add('hidden');
+    });
 
   bindExplorePreviewInput();
   bindFormatToggle();
@@ -92,46 +96,52 @@ function bindBatchEvents() {
       renderPropsPanel();
     });
   }
-  if (layoutBtn) layoutBtn.addEventListener('click', () => {
-    if (!batchSelectMode) return showBatchNotice('请先开启复选模式', 'warning');
-    openBatchModal('batchLayoutModal');
-  });
-  if (urlBtn) urlBtn.addEventListener('click', () => {
-    if (!batchSelectMode) return showBatchNotice('请先开启复选模式', 'warning');
-    prefillBatchTemplateFieldsFromSelection();
-    setBatchUrlMode('template');
-    openBatchModal('batchUrlModal');
-  });
+  if (layoutBtn)
+    layoutBtn.addEventListener('click', () => {
+      if (!batchSelectMode) return showBatchNotice('请先开启复选模式', 'warning');
+      openBatchModal('batchLayoutModal');
+    });
+  if (urlBtn)
+    urlBtn.addEventListener('click', () => {
+      if (!batchSelectMode) return showBatchNotice('请先开启复选模式', 'warning');
+      prefillBatchTemplateFieldsFromSelection();
+      setBatchUrlMode('template');
+      openBatchModal('batchUrlModal');
+    });
   if (layoutCancelBtn) layoutCancelBtn.addEventListener('click', () => closeBatchModal('batchLayoutModal'));
   if (layoutApplyBtn) layoutApplyBtn.addEventListener('click', applyBatchLayoutToSelected);
   if (urlCancelBtn) urlCancelBtn.addEventListener('click', () => closeBatchModal('batchUrlModal'));
   if (urlApplyBtn) urlApplyBtn.addEventListener('click', applyBatchUrlToSelected);
   if (templateSaveBtn) templateSaveBtn.addEventListener('click', createStyleTemplateFromModal);
-  if (templateCancelBtn) templateCancelBtn.addEventListener('click', () => {
-    resetTemplateModal();
-    closeBatchModal('styleTemplateModal');
-    if (reopenManageAfterTemplateModal) {
-      reopenManageAfterTemplateModal = false;
-      renderTemplateManageList(document.getElementById('templateSearchInput')?.value?.trim() || '');
+  if (templateCancelBtn)
+    templateCancelBtn.addEventListener('click', () => {
+      resetTemplateModal();
+      closeBatchModal('styleTemplateModal');
+      if (reopenManageAfterTemplateModal) {
+        reopenManageAfterTemplateModal = false;
+        renderTemplateManageList(document.getElementById('templateSearchInput')?.value?.trim() || '');
+        openBatchModal('defaultTemplateModal');
+      }
+    });
+  if (defaultTplBtn)
+    defaultTplBtn.addEventListener('click', () => {
+      const searchEl = document.getElementById('templateSearchInput');
+      if (searchEl) searchEl.value = '';
+      renderTemplateManageList();
       openBatchModal('defaultTemplateModal');
-    }
-  });
-  if (defaultTplBtn) defaultTplBtn.addEventListener('click', () => {
-    const searchEl = document.getElementById('templateSearchInput');
-    if (searchEl) searchEl.value = '';
-    renderTemplateManageList();
-    openBatchModal('defaultTemplateModal');
-  });
+    });
   if (defaultCancelBtn) defaultCancelBtn.addEventListener('click', () => closeBatchModal('defaultTemplateModal'));
-  if (templateManageAddBtn) templateManageAddBtn.addEventListener('click', () => {
-    resetTemplateModal();
-    reopenManageAfterTemplateModal = true;
-    openBatchModal('styleTemplateModal');
-  });
-  if (applyBtn) applyBtn.addEventListener('click', () => {
-    renderTemplateSelect();
-    openBatchModal('applyStyleModal');
-  });
+  if (templateManageAddBtn)
+    templateManageAddBtn.addEventListener('click', () => {
+      resetTemplateModal();
+      reopenManageAfterTemplateModal = true;
+      openBatchModal('styleTemplateModal');
+    });
+  if (applyBtn)
+    applyBtn.addEventListener('click', () => {
+      renderTemplateSelect();
+      openBatchModal('applyStyleModal');
+    });
   if (applyConfirmBtn) applyConfirmBtn.addEventListener('click', applyTemplateFromModalToSelected);
   if (applyCancelBtn) applyCancelBtn.addEventListener('click', () => closeBatchModal('applyStyleModal'));
   if (selectAllBtn) selectAllBtn.addEventListener('click', selectAllCards);
@@ -158,18 +168,17 @@ function loadStyleTemplateState() {
 }
 
 function saveStyleTemplateState() {
-  chrome.storage.local.set({
-    exploreStyleState: {
-      templates: styleTemplates,
-      defaultTemplateId,
-    },
-  });
+  chrome.storage.local.set({ exploreStyleState: { templates: styleTemplates, defaultTemplateId } });
 }
 
 function renderTemplateSelect() {
   const selects = ['applyTemplateSelect'];
-  const options = ['<option value="">选择模板</option>']
-    .concat(styleTemplates.map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}${t.id === defaultTemplateId ? '（默认）' : ''}</option>`));
+  const options = ['<option value="">选择模板</option>'].concat(
+    styleTemplates.map(
+      (t) =>
+        `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}${t.id === defaultTemplateId ? '（默认）' : ''}</option>`
+    )
+  );
   selects.forEach((id) => {
     const select = document.getElementById(id);
     if (!select) return;
@@ -181,20 +190,21 @@ function renderTemplateSelect() {
 function renderTemplateManageList(keyword = '') {
   const container = document.getElementById('templateManageList');
   if (!container) return;
-  const list = styleTemplates.filter(t => !keyword || t.name.toLowerCase().includes(keyword.toLowerCase()));
+  const list = styleTemplates.filter((t) => !keyword || t.name.toLowerCase().includes(keyword.toLowerCase()));
   if (!list.length) {
     container.innerHTML = '<div class="template-manage-item">暂无模板</div>';
     return;
   }
-  container.innerHTML = list.map((t) => {
-    const styleText = [
-      `layout_flexGrow=${t.style?.layout_flexGrow ?? 1}`,
-      `layout_flexShrink=${t.style?.layout_flexShrink ?? 0}`,
-      `layout_alignSelf=${t.style?.layout_alignSelf ?? 'auto'}`,
-      `layout_flexBasisPercent=${t.style?.layout_flexBasisPercent ?? -1}`,
-      `layout_wrapBefore=${!!t.style?.layout_wrapBefore}`,
-    ].join('\n');
-    return `<div class="template-manage-item" data-id="${escapeHtml(t.id)}">
+  container.innerHTML = list
+    .map((t) => {
+      const styleText = [
+        `layout_flexGrow=${t.style?.layout_flexGrow ?? 1}`,
+        `layout_flexShrink=${t.style?.layout_flexShrink ?? 0}`,
+        `layout_alignSelf=${t.style?.layout_alignSelf ?? 'auto'}`,
+        `layout_flexBasisPercent=${t.style?.layout_flexBasisPercent ?? -1}`,
+        `layout_wrapBefore=${!!t.style?.layout_wrapBefore}`
+      ].join('\n');
+      return `<div class="template-manage-item" data-id="${escapeHtml(t.id)}">
       <div class="row"><span class="name">${escapeHtml(t.name)}</span>${t.id === defaultTemplateId ? '<span class="default-tag">默认</span>' : ''}</div>
       <div class="actions">
         <button class="tpl-view">查看</button>
@@ -204,7 +214,8 @@ function renderTemplateManageList(keyword = '') {
       </div>
       <div class="detail hidden">${escapeHtml(styleText)}</div>
     </div>`;
-  }).join('');
+    })
+    .join('');
 
   container.querySelectorAll('.template-manage-item').forEach((itemEl) => {
     const id = itemEl.dataset.id;
@@ -227,8 +238,9 @@ function closeBatchModal(id) {
 }
 
 function closeAllBatchModals() {
-  ['batchLayoutModal', 'batchUrlModal', 'styleTemplateModal', 'defaultTemplateModal', 'applyStyleModal']
-    .forEach((id) => document.getElementById(id)?.classList.add('hidden'));
+  ['batchLayoutModal', 'batchUrlModal', 'styleTemplateModal', 'defaultTemplateModal', 'applyStyleModal'].forEach((id) =>
+    document.getElementById(id)?.classList.add('hidden')
+  );
 }
 
 function updateBatchActionAvailability() {
@@ -274,7 +286,7 @@ function bindBatchUrlInputAutoResize() {
     'batchPagedUrlTemplate',
     'batchFirstPageDiff',
     'batchUrlPattern',
-    'batchUrlReplacement',
+    'batchUrlReplacement'
   ];
   ids.forEach((id) => {
     const el = document.getElementById(id);
@@ -381,24 +393,24 @@ function finishCollection() {
   updateCollectionStatus(false);
 }
 
-window.handleExploreCollected = function(items) {
-  items.forEach(item => {
+window.handleExploreCollected = function (items) {
+  items.forEach((item) => {
     addExploreItem({ title: item.title, url: item.url });
   });
   updateExploreUrlPreview();
   finishCollection();
 };
 
-window.handleExploreItemCollected = function(item, total) {
+window.handleExploreItemCollected = function (item, total) {
   updateCollectionStatus(true, total);
   updateExploreCollectionIndicator('收集中', `<a>`, item.title);
 };
 
-window.handleExploreCollectionStarted = function() {
+window.handleExploreCollectionStarted = function () {
   updateCollectionStatus(true, 0);
 };
 
-window.handleExploreElementHover = function(message) {
+window.handleExploreElementHover = function (message) {
   updateExploreCollectionIndicator('收集中', message.elementInfo, message.elementText);
 };
 
@@ -424,12 +436,7 @@ function saveExploreState() {
 
 function addExploreItem(item) {
   ensureTemplateConsistency();
-  const defaults = {
-    title: '',
-    url: '',
-    isSeparator: false,
-    style: getDefaultStyle(),
-  };
+  const defaults = { title: '', url: '', isSeparator: false, style: getDefaultStyle() };
   exploreItems.push({ ...defaults, ...item, style: { ...defaults.style, ...(item.style || {}) } });
   saveExploreState();
   renderExploreCards();
@@ -438,9 +445,11 @@ function addExploreItem(item) {
 
 function removeExploreItem(index) {
   exploreItems.splice(index, 1);
-  selectedCardIndexes = new Set(Array.from(selectedCardIndexes)
-    .filter(i => i !== index)
-    .map(i => (i > index ? i - 1 : i)));
+  selectedCardIndexes = new Set(
+    Array.from(selectedCardIndexes)
+      .filter((i) => i !== index)
+      .map((i) => (i > index ? i - 1 : i))
+  );
   if (selectedCardIndex === index) selectedCardIndex = -1;
   else if (selectedCardIndex > index) selectedCardIndex--;
   saveExploreState();
@@ -453,28 +462,31 @@ function renderExploreCards() {
   const container = document.getElementById('exploreCards');
   if (!container) return;
 
-  container.innerHTML = exploreItems.map((item, i) => {
-    const selected = i === selectedCardIndex ? ' selected' : '';
-    const batchSelected = selectedCardIndexes.has(i) ? ' batch-selected' : '';
-    const sepClass = item.isSeparator ? ' separator' : '';
-    const flexGrow = item.style?.layout_flexGrow ?? 1;
-    const flexShrink = item.style?.layout_flexShrink ?? 0;
-    const flexBasis = item.style?.layout_flexBasisPercent ?? -1;
-    const basisCss = flexBasis > 0 ? `${Math.round(flexBasis * 10000) / 100}%` : 'auto';
-    const widthStyle = flexBasis > 0
-      ? `flex: ${flexGrow} ${flexShrink} ${basisCss}; max-width: ${basisCss};`
-      : `flex: ${flexGrow} ${flexShrink} calc((100% - 8px) / 3);`;
+  container.innerHTML = exploreItems
+    .map((item, i) => {
+      const selected = i === selectedCardIndex ? ' selected' : '';
+      const batchSelected = selectedCardIndexes.has(i) ? ' batch-selected' : '';
+      const sepClass = item.isSeparator ? ' separator' : '';
+      const flexGrow = item.style?.layout_flexGrow ?? 1;
+      const flexShrink = item.style?.layout_flexShrink ?? 0;
+      const flexBasis = item.style?.layout_flexBasisPercent ?? -1;
+      const basisCss = flexBasis > 0 ? `${Math.round(flexBasis * 10000) / 100}%` : 'auto';
+      const widthStyle =
+        flexBasis > 0
+          ? `flex: ${flexGrow} ${flexShrink} ${basisCss}; max-width: ${basisCss};`
+          : `flex: ${flexGrow} ${flexShrink} calc((100% - 8px) / 3);`;
 
-    return `<div class="editor-card${selected}${batchSelected}${sepClass}" data-index="${i}" style="${widthStyle}">
+      return `<div class="editor-card${selected}${batchSelected}${sepClass}" data-index="${i}" style="${widthStyle}">
       ${batchSelectMode ? `<input type="checkbox" class="card-check" data-index="${i}" ${selectedCardIndexes.has(i) ? 'checked' : ''}>` : ''}
       <span class="card-title">${escapeHtml(item.title)}</span>
       ${item.url ? `<span class="card-url">${escapeHtml(item.url.substring(0, 40))}${item.url.length > 40 ? '...' : ''}</span>` : ''}
       <button class="card-delete" data-index="${i}">×</button>
       <div class="card-resize-handle" data-index="${i}"></div>
     </div>`;
-  }).join('');
+    })
+    .join('');
 
-  container.querySelectorAll('.editor-card').forEach(card => {
+  container.querySelectorAll('.editor-card').forEach((card) => {
     card.addEventListener('click', (e) => {
       if (e.target.classList.contains('card-delete')) return;
       if (e.target.classList.contains('card-resize-handle')) return;
@@ -492,7 +504,7 @@ function renderExploreCards() {
     });
   });
 
-  container.querySelectorAll('.card-check').forEach(chk => {
+  container.querySelectorAll('.card-check').forEach((chk) => {
     chk.addEventListener('click', (e) => {
       e.stopPropagation();
       const idx = parseInt(chk.dataset.index, 10);
@@ -502,7 +514,7 @@ function renderExploreCards() {
     });
   });
 
-  container.querySelectorAll('.card-delete').forEach(btn => {
+  container.querySelectorAll('.card-delete').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       removeExploreItem(parseInt(btn.dataset.index, 10));
@@ -519,7 +531,7 @@ function initCardDragDrop() {
 
   let dragIndex = -1;
 
-  container.querySelectorAll('.editor-card').forEach(card => {
+  container.querySelectorAll('.editor-card').forEach((card) => {
     card.draggable = true;
 
     card.addEventListener('dragstart', (e) => {
@@ -530,7 +542,7 @@ function initCardDragDrop() {
 
     card.addEventListener('dragend', () => {
       card.classList.remove('dragging');
-      container.querySelectorAll('.editor-card').forEach(c => c.style.borderTop = '');
+      container.querySelectorAll('.editor-card').forEach((c) => (c.style.borderTop = ''));
     });
 
     card.addEventListener('dragover', (e) => {
@@ -571,7 +583,7 @@ function initCardResize() {
   let resizeCardIndex = -1;
   let resizeStartFlexBasis = 0;
 
-  container.querySelectorAll('.card-resize-handle').forEach(handle => {
+  container.querySelectorAll('.card-resize-handle').forEach((handle) => {
     handle.addEventListener('mousedown', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -588,7 +600,7 @@ function initCardResize() {
     if (!resizing || resizeCardIndex < 0) return;
     const dx = e.clientX - resizeStartX;
     const pctChange = dx / 100;
-    const newBasis = Math.round((Math.max(-1, Math.min(1, resizeStartFlexBasis + pctChange))) * 100) / 100;
+    const newBasis = Math.round(Math.max(-1, Math.min(1, resizeStartFlexBasis + pctChange)) * 100) / 100;
     exploreItems[resizeCardIndex].style.layout_flexBasisPercent = newBasis;
     renderExploreCards();
     if (selectedCardIndex === resizeCardIndex) renderPropsPanel();
@@ -681,13 +693,13 @@ function renderPropsPanel() {
     }
   };
 
-  bind('propTitle', 'title', el => el.value, 'item');
-  bind('propUrl', 'url', el => el.value, 'item');
-  bind('propFlexGrow', 'layout_flexGrow', el => parseFloat(el.value) || 0);
-  bind('propFlexShrink', 'layout_flexShrink', el => parseFloat(el.value) || 0);
-  bind('propAlignSelf', 'layout_alignSelf', el => el.value);
-  bind('propFlexBasisPercent', 'layout_flexBasisPercent', el => parseFloat(el.value) ?? -1);
-  bind('propWrapBefore', 'layout_wrapBefore', el => el.checked);
+  bind('propTitle', 'title', (el) => el.value, 'item');
+  bind('propUrl', 'url', (el) => el.value, 'item');
+  bind('propFlexGrow', 'layout_flexGrow', (el) => parseFloat(el.value) || 0);
+  bind('propFlexShrink', 'layout_flexShrink', (el) => parseFloat(el.value) || 0);
+  bind('propAlignSelf', 'layout_alignSelf', (el) => el.value);
+  bind('propFlexBasisPercent', 'layout_flexBasisPercent', (el) => parseFloat(el.value) ?? -1);
+  bind('propWrapBefore', 'layout_wrapBefore', (el) => el.checked);
 
   const propTitle = document.getElementById('propTitle');
   const propUrl = document.getElementById('propUrl');
@@ -705,23 +717,22 @@ function autoResize(el) {
 }
 
 function exportExploreJson() {
-  const output = exploreFormat === 1
-    ? itemsToExploreUrlFormat1(exploreItems)
-    : JSON.stringify(itemsToExploreJson(exploreItems), null, 2);
+  const output =
+    exploreFormat === 1
+      ? itemsToExploreUrlFormat1(exploreItems)
+      : JSON.stringify(itemsToExploreJson(exploreItems), null, 2);
 
   document.getElementById('exploreJsonOutput').value = output;
   document.getElementById('exploreJsonModal').classList.remove('hidden');
 }
 
 function getExploreJsonString() {
-  return exploreFormat === 1
-    ? itemsToExploreUrlFormat1(exploreItems)
-    : itemsToExploreJson(exploreItems);
+  return exploreFormat === 1 ? itemsToExploreUrlFormat1(exploreItems) : itemsToExploreJson(exploreItems);
 }
 
 window.getExploreUrlEditorItems = getExploreJsonString;
 window.itemsToExploreUrl = itemsToExploreUrl;
-window.clearExploreEditor = function() {
+window.clearExploreEditor = function () {
   exploreItems = [];
   selectedCardIndex = -1;
   saveExploreState();
@@ -731,10 +742,12 @@ window.clearExploreEditor = function() {
 };
 
 function itemsToExploreUrl(items) {
-  return items.map(item => {
-    const url = item.isSeparator ? '' : item.url;
-    return `${item.title}::${url}`;
-  }).join('\n');
+  return items
+    .map((item) => {
+      const url = item.isSeparator ? '' : item.url;
+      return `${item.title}::${url}`;
+    })
+    .join('\n');
 }
 
 function updateExploreUrlPreview() {
@@ -745,9 +758,10 @@ function updateExploreUrlPreview() {
     textarea.style.height = 'auto';
     return;
   }
-  textarea.value = exploreFormat === 1
-    ? itemsToExploreUrlFormat1(exploreItems)
-    : JSON.stringify(itemsToExploreJson(exploreItems), null, 2);
+  textarea.value =
+    exploreFormat === 1
+      ? itemsToExploreUrlFormat1(exploreItems)
+      : JSON.stringify(itemsToExploreJson(exploreItems), null, 2);
   setTimeout(() => autoResizePreview(), 0);
 }
 
@@ -761,17 +775,19 @@ function autoResizePreview() {
 }
 
 function itemsToExploreUrlFormat1(items) {
-  return items.map(item => {
-    const url = item.isSeparator ? '' : item.url;
-    return `${item.title}::${url}`;
-  }).join('\n');
+  return items
+    .map((item) => {
+      const url = item.isSeparator ? '' : item.url;
+      return `${item.title}::${url}`;
+    })
+    .join('\n');
 }
 
 function itemsToExploreJson(items) {
-  return items.map(item => {
+  return items.map((item) => {
     const obj = { title: item.title, url: item.url };
     const style = {};
-    EXPLORE_PROPS.forEach(prop => {
+    EXPLORE_PROPS.forEach((prop) => {
       const val = item.style?.[prop];
       if (val !== undefined && val !== null && val !== false && val !== 'auto' && val !== -1 && val !== 0) {
         style[prop] = val;
@@ -783,7 +799,7 @@ function itemsToExploreJson(items) {
 }
 
 function bindFormatToggle() {
-  document.querySelectorAll('.format-btn').forEach(btn => {
+  document.querySelectorAll('.format-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       exploreFormat = parseInt(btn.dataset.format, 10);
       saveExploreState();
@@ -794,7 +810,7 @@ function bindFormatToggle() {
 }
 
 function updateFormatButtons() {
-  document.querySelectorAll('.format-btn').forEach(btn => {
+  document.querySelectorAll('.format-btn').forEach((btn) => {
     btn.classList.toggle('active', parseInt(btn.dataset.format, 10) === exploreFormat);
   });
 }
@@ -804,8 +820,8 @@ function bindExplorePreviewInput() {
   if (!textarea) return;
 
   textarea.addEventListener('input', () => {
-    const lines = textarea.value.split('\n').filter(l => l.trim());
-    exploreItems = lines.map(line => {
+    const lines = textarea.value.split('\n').filter((l) => l.trim());
+    exploreItems = lines.map((line) => {
       const sepIdx = line.indexOf('::');
       if (sepIdx === -1) {
         return { title: line.trim(), url: '', isSeparator: false, style: getDefaultStyle() };
@@ -821,14 +837,14 @@ function bindExplorePreviewInput() {
 }
 
 function getDefaultStyle() {
-  const template = styleTemplates.find(t => t.id === defaultTemplateId);
+  const template = styleTemplates.find((t) => t.id === defaultTemplateId);
   if (template?.style) {
     return {
       layout_flexGrow: template.style.layout_flexGrow ?? 1,
       layout_flexShrink: template.style.layout_flexShrink ?? 0,
       layout_alignSelf: template.style.layout_alignSelf ?? 'auto',
       layout_flexBasisPercent: template.style.layout_flexBasisPercent ?? -1,
-      layout_wrapBefore: template.style.layout_wrapBefore ?? false,
+      layout_wrapBefore: template.style.layout_wrapBefore ?? false
     };
   }
   return {
@@ -836,17 +852,22 @@ function getDefaultStyle() {
     layout_flexShrink: 0,
     layout_alignSelf: 'auto',
     layout_flexBasisPercent: parseFloat(document.getElementById('tplFlexBasisPercent')?.value || '-1'),
-    layout_wrapBefore: false,
+    layout_wrapBefore: false
   };
 }
 
 function getBatchStylePatch() {
   const patch = {};
-  if (document.getElementById('batchEnableFlexGrow')?.checked) patch.layout_flexGrow = parseFloat(document.getElementById('batchFlexGrow')?.value || '1') || 0;
-  if (document.getElementById('batchEnableFlexShrink')?.checked) patch.layout_flexShrink = parseFloat(document.getElementById('batchFlexShrink')?.value || '0') || 0;
-  if (document.getElementById('batchEnableAlignSelf')?.checked) patch.layout_alignSelf = document.getElementById('batchAlignSelf')?.value || 'auto';
-  if (document.getElementById('batchEnableFlexBasis')?.checked) patch.layout_flexBasisPercent = parseFloat(document.getElementById('batchFlexBasisPercent')?.value || '-1');
-  if (document.getElementById('batchEnableWrapBefore')?.checked) patch.layout_wrapBefore = !!document.getElementById('batchWrapBefore')?.checked;
+  if (document.getElementById('batchEnableFlexGrow')?.checked)
+    patch.layout_flexGrow = parseFloat(document.getElementById('batchFlexGrow')?.value || '1') || 0;
+  if (document.getElementById('batchEnableFlexShrink')?.checked)
+    patch.layout_flexShrink = parseFloat(document.getElementById('batchFlexShrink')?.value || '0') || 0;
+  if (document.getElementById('batchEnableAlignSelf')?.checked)
+    patch.layout_alignSelf = document.getElementById('batchAlignSelf')?.value || 'auto';
+  if (document.getElementById('batchEnableFlexBasis')?.checked)
+    patch.layout_flexBasisPercent = parseFloat(document.getElementById('batchFlexBasisPercent')?.value || '-1');
+  if (document.getElementById('batchEnableWrapBefore')?.checked)
+    patch.layout_wrapBefore = !!document.getElementById('batchWrapBefore')?.checked;
   return patch;
 }
 
@@ -857,7 +878,7 @@ function getBatchUrlReplaceConfig() {
     pattern,
     replacement: document.getElementById('batchUrlReplacement')?.value || '',
     global: !!document.getElementById('batchRegexGlobal')?.checked,
-    ignoreCase: !!document.getElementById('batchRegexIgnoreCase')?.checked,
+    ignoreCase: !!document.getElementById('batchRegexIgnoreCase')?.checked
   };
 }
 
@@ -880,7 +901,7 @@ function applyBatchLayoutToSelected() {
     return;
   }
   const targetIndexes = Array.from(selectedCardIndexes);
-  targetIndexes.forEach(i => {
+  targetIndexes.forEach((i) => {
     if (!exploreItems[i]) return;
     exploreItems[i].style = { ...(exploreItems[i].style || {}), ...patch };
   });
@@ -965,10 +986,10 @@ function createStyleTemplateFromModal() {
     layout_flexShrink: parseFloat(document.getElementById('tplFlexShrink')?.value || '0') || 0,
     layout_alignSelf: document.getElementById('tplAlignSelf')?.value || 'auto',
     layout_flexBasisPercent: parseFloat(document.getElementById('tplFlexBasisPercent')?.value || '-1'),
-    layout_wrapBefore: !!document.getElementById('tplWrapBefore')?.checked,
+    layout_wrapBefore: !!document.getElementById('tplWrapBefore')?.checked
   };
   if (editingId) {
-    styleTemplates = styleTemplates.map(t => (t.id === editingId ? { ...t, name, style } : t));
+    styleTemplates = styleTemplates.map((t) => (t.id === editingId ? { ...t, name, style } : t));
     showBatchNotice(`已更新模板：${name}`);
   } else {
     const id = `tpl_${Date.now()}`;
@@ -988,7 +1009,7 @@ function createStyleTemplateFromModal() {
 }
 
 function openEditTemplateModal(id) {
-  const tpl = styleTemplates.find(t => t.id === id);
+  const tpl = styleTemplates.find((t) => t.id === id);
   if (!tpl) return;
   document.getElementById('styleTemplateModalTitle').textContent = '编辑样式模板';
   document.getElementById('editingTemplateId').value = tpl.id;
@@ -1015,10 +1036,10 @@ function deleteTemplate(id) {
     showBatchNotice('至少保留一个模板');
     return;
   }
-  const tpl = styleTemplates.find(t => t.id === id);
+  const tpl = styleTemplates.find((t) => t.id === id);
   if (!tpl) return;
   if (!confirm(`确认删除模板「${tpl.name}」吗？`)) return;
-  styleTemplates = styleTemplates.filter(t => t.id !== id);
+  styleTemplates = styleTemplates.filter((t) => t.id !== id);
   if (defaultTemplateId === id) defaultTemplateId = '';
   saveStyleTemplateState();
   renderTemplateSelect();
@@ -1030,17 +1051,19 @@ function ensureTemplateConsistency() {
   if (!Array.isArray(styleTemplates)) styleTemplates = [];
   if (!styleTemplates.length) {
     const id = `tpl_${Date.now()}`;
-    styleTemplates = [{
-      id,
-      name: '默认',
-      style: {
-        layout_flexGrow: 1,
-        layout_flexShrink: 0,
-        layout_alignSelf: 'auto',
-        layout_flexBasisPercent: -1,
-        layout_wrapBefore: false,
-      },
-    }];
+    styleTemplates = [
+      {
+        id,
+        name: '默认',
+        style: {
+          layout_flexGrow: 1,
+          layout_flexShrink: 0,
+          layout_alignSelf: 'auto',
+          layout_flexBasisPercent: -1,
+          layout_wrapBefore: false
+        }
+      }
+    ];
     defaultTemplateId = id;
     saveStyleTemplateState();
     return;
@@ -1052,10 +1075,10 @@ function ensureTemplateConsistency() {
       layout_flexShrink: t.style?.layout_flexShrink ?? 0,
       layout_alignSelf: t.style?.layout_alignSelf ?? 'auto',
       layout_flexBasisPercent: t.style?.layout_flexBasisPercent ?? -1,
-      layout_wrapBefore: t.style?.layout_wrapBefore ?? false,
-    },
+      layout_wrapBefore: t.style?.layout_wrapBefore ?? false
+    }
   }));
-  if (!defaultTemplateId || !styleTemplates.some(t => t.id === defaultTemplateId)) {
+  if (!defaultTemplateId || !styleTemplates.some((t) => t.id === defaultTemplateId)) {
     defaultTemplateId = styleTemplates[0].id;
   }
   saveStyleTemplateState();
@@ -1095,19 +1118,22 @@ function resetTemplateModal() {
 
 function applyTemplateFromModalToSelected() {
   const select = document.getElementById('applyTemplateSelect');
-  const tpl = styleTemplates.find(t => t.id === select?.value);
+  const tpl = styleTemplates.find((t) => t.id === select?.value);
   if (!tpl) {
     window.showToast('请先选择模板', 'warning');
     return;
   }
-  const targetIndexes = batchSelectMode && selectedCardIndexes.size
-    ? Array.from(selectedCardIndexes)
-    : (selectedCardIndex >= 0 ? [selectedCardIndex] : []);
+  const targetIndexes =
+    batchSelectMode && selectedCardIndexes.size
+      ? Array.from(selectedCardIndexes)
+      : selectedCardIndex >= 0
+        ? [selectedCardIndex]
+        : [];
   if (!targetIndexes.length) {
     window.showToast('请先选择卡片（单选或复选）', 'warning');
     return;
   }
-  targetIndexes.forEach(i => {
+  targetIndexes.forEach((i) => {
     if (!exploreItems[i]) return;
     exploreItems[i].style = { ...(exploreItems[i].style || {}), ...(tpl.style || {}) };
   });

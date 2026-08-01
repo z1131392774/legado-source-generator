@@ -16,8 +16,8 @@ const IMPORT_CATEGORIES = [
       { key: 'bookUrlPattern', label: 'URL规则', type: 'state' },
       { key: 'header', label: '请求头', type: 'header' },
       { key: 'loginCheckJs', label: '登录检测', type: 'state' },
-      { key: 'bookSourceComment', label: '注释', type: 'state' },
-    ],
+      { key: 'bookSourceComment', label: '注释', type: 'state' }
+    ]
   },
   {
     key: 'search',
@@ -33,8 +33,8 @@ const IMPORT_CATEGORIES = [
       { key: 'intro', label: '简介', type: 'rule' },
       { key: 'coverUrl', label: '封面URL', type: 'rule' },
       { key: 'bookUrl', label: '详情页URL', type: 'rule' },
-      { key: 'checkKeyWord', label: '校验关键词', type: 'rule' },
-    ],
+      { key: 'checkKeyWord', label: '校验关键词', type: 'rule' }
+    ]
   },
   {
     key: 'explore',
@@ -49,8 +49,8 @@ const IMPORT_CATEGORIES = [
       { key: 'lastChapter', label: '最新章节', type: 'rule' },
       { key: 'intro', label: '简介', type: 'rule' },
       { key: 'coverUrl', label: '封面URL', type: 'rule' },
-      { key: 'bookUrl', label: '详情页URL', type: 'rule' },
-    ],
+      { key: 'bookUrl', label: '详情页URL', type: 'rule' }
+    ]
   },
   {
     key: 'bookInfo',
@@ -63,8 +63,8 @@ const IMPORT_CATEGORIES = [
       { key: 'lastChapter', label: '最新章节', type: 'rule' },
       { key: 'intro', label: '简介', type: 'rule' },
       { key: 'coverUrl', label: '封面URL', type: 'rule' },
-      { key: 'tocUrl', label: '目录链接', type: 'rule' },
-    ],
+      { key: 'tocUrl', label: '目录链接', type: 'rule' }
+    ]
   },
   {
     key: 'toc',
@@ -77,8 +77,8 @@ const IMPORT_CATEGORIES = [
       { key: 'updateTime', label: '更新时间', type: 'rule' },
       { key: 'isVip', label: 'VIP标识', type: 'rule' },
       { key: 'isPay', label: '付费标识', type: 'rule' },
-      { key: 'nextTocUrl', label: '下一页目录', type: 'rule' },
-    ],
+      { key: 'nextTocUrl', label: '下一页目录', type: 'rule' }
+    ]
   },
   {
     key: 'content',
@@ -88,9 +88,9 @@ const IMPORT_CATEGORIES = [
       { key: 'subContent', label: '后续正文', type: 'rule' },
       { key: 'title', label: '章节标题', type: 'rule' },
       { key: 'nextContentUrl', label: '下一页正文', type: 'rule' },
-      { key: 'webJs', label: '脚本注入', type: 'rule' },
-    ],
-  },
+      { key: 'webJs', label: '脚本注入', type: 'rule' }
+    ]
+  }
 ];
 
 /**
@@ -106,8 +106,8 @@ function buildSelectionKey(categoryKey, itemKey) {
  */
 function getDefaultImportSelection() {
   const selection = {};
-  IMPORT_CATEGORIES.forEach(cat => {
-    cat.items.forEach(item => {
+  IMPORT_CATEGORIES.forEach((cat) => {
+    cat.items.forEach((item) => {
       selection[buildSelectionKey(cat.key, item.key)] = true;
     });
   });
@@ -187,7 +187,7 @@ function isStateEmpty(st) {
 
   // Check header items
   if (Array.isArray(st.headerItems) && st.headerItems.length > 0) {
-    const hasNonEmpty = st.headerItems.some(h => (h.key || '').trim() || (h.value || '').trim());
+    const hasNonEmpty = st.headerItems.some((h) => (h.key || '').trim() || (h.value || '').trim());
     if (hasNonEmpty) return false;
   }
 
@@ -224,9 +224,10 @@ function buildCoverWarning(parsedJson, st) {
 
   const importUrlDisplay = importUrl || '(空)';
   const currentUrlDisplay = currentUrl || '(空)';
-  const urlChangeHtml = importUrl !== currentUrl
-    ? `<div class="import-warning"><span class="import-warning-icon">⚠️</span> 源URL不同： <code>${escapeHtml(currentUrlDisplay)}</code> → <code>${escapeHtml(importUrlDisplay)}</code></div>`
-    : '';
+  const urlChangeHtml =
+    importUrl !== currentUrl
+      ? `<div class="import-warning"><span class="import-warning-icon">⚠️</span> 源URL不同： <code>${escapeHtml(currentUrlDisplay)}</code> → <code>${escapeHtml(importUrlDisplay)}</code></div>`
+      : '';
 
   return urlChangeHtml;
 }
@@ -242,8 +243,8 @@ function buildCoverWarning(parsedJson, st) {
  * @param {object} selection - Map of selectionKey -> boolean
  */
 function applyImportToState(st, parsedJson, selection) {
-  IMPORT_CATEGORIES.forEach(cat => {
-    cat.items.forEach(item => {
+  IMPORT_CATEGORIES.forEach((cat) => {
+    cat.items.forEach((item) => {
       const selKey = buildSelectionKey(cat.key, item.key);
       if (!selection[selKey]) return; // User didn't select this item
 
@@ -286,7 +287,7 @@ function getJsonValue(parsedJson, categoryKey, itemKey, itemType) {
     explore: 'ruleExplore',
     bookInfo: 'ruleBookInfo',
     toc: 'ruleToc',
-    content: 'ruleContent',
+    content: 'ruleContent'
   };
   const jsonKey = ruleTypeMap[categoryKey];
   if (jsonKey) {
@@ -340,11 +341,11 @@ function parseExploreUrlToItems(exploreUrlStr) {
   try {
     const parsed = JSON.parse(exploreUrlStr);
     if (Array.isArray(parsed)) {
-      return parsed.map(item => ({
+      return parsed.map((item) => ({
         title: item.title || '',
         url: item.url || '',
         isSeparator: Boolean(item.isSeparator),
-        style: item.style || {},
+        style: item.style || {}
       }));
     }
   } catch (e) {
@@ -352,9 +353,10 @@ function parseExploreUrlToItems(exploreUrlStr) {
   }
 
   // Format 1: "title::url" lines
-  return exploreUrlStr.split('\n')
-    .filter(line => line.trim())
-    .map(line => {
+  return exploreUrlStr
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line) => {
       const idx = line.indexOf('::');
       if (idx > 0) {
         return { title: line.substring(0, idx), url: line.substring(idx + 2), isSeparator: false, style: {} };
@@ -380,7 +382,7 @@ function applyRuleField(st, ruleType, fieldKey, value) {
     state: strValue ? 'selected' : 'pending',
     rawSelector: '',
     tagName: '',
-    previews: [],
+    previews: []
   };
   rule.fieldStates[fieldKey] = strValue ? 'selected' : 'pending';
 }

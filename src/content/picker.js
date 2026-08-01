@@ -3,7 +3,7 @@
  * Handles element selection for rule creation
  */
 
-(function() {
+(function () {
   'use strict';
 
   // State
@@ -57,7 +57,7 @@
   // Known root elements for smart detection
   const KNOWN_ROOTS = {
     bookList: ['#bookList', '.book-list', '[data-book-list]', '.novel-list', '#novel-list', '.chapter-list'],
-    bookItem: ['.book-item', '.novel-item', '[data-book-item]', '.book-card', '.story-item'],
+    bookItem: ['.book-item', '.novel-item', '[data-book-item]', '.book-card', '.story-item']
   };
 
   /**
@@ -67,11 +67,7 @@
    */
   function showToast(message, type = 'warning') {
     // 仅在侧边栏显示提示，避免网页与侧边栏重复弹出。
-    safeSendMessage({
-      action: 'showToast',
-      message: message,
-      type: type
-    });
+    safeSendMessage({ action: 'showToast', message: message, type: type });
   }
 
   /**
@@ -137,7 +133,7 @@
   }
 
   /**
-    * Check if element matches current step context
+   * Check if element matches current step context
    * @param {Element} element - The element to check
    * @returns {Object} - { matches: boolean, warning: string }
    */
@@ -148,7 +144,7 @@
     try {
       const selector = getCssSelector(element, { root: findSmartRoot(element), preferReusable: true });
       const matches = document.querySelectorAll(selector);
-      
+
       if (matches.length > 1) {
         result.warning = `Warning: This selector matches ${matches.length} elements`;
       }
@@ -157,14 +153,13 @@
     }
 
     // Check if element is likely interactive
-    const isInteractive = ['a', 'button', 'input', 'select', 'textarea'].includes(
-      element.tagName.toLowerCase()
-    );
+    const isInteractive = ['a', 'button', 'input', 'select', 'textarea'].includes(element.tagName.toLowerCase());
 
     if (currentStep === 'coverUrl') {
-      const hasImage = element.tagName.toLowerCase() === 'img' || 
-                       element.querySelector('img') !== null ||
-                       element.style.backgroundImage;
+      const hasImage =
+        element.tagName.toLowerCase() === 'img' ||
+        element.querySelector('img') !== null ||
+        element.style.backgroundImage;
       if (!hasImage) {
         result.warning = 'Expected image element for cover URL';
       }
@@ -209,8 +204,10 @@
   function sendElementInfo(element) {
     const tagName = element.tagName.toLowerCase();
     const id = element.id ? `#${element.id}` : '';
-    const classes = element.className && typeof element.className === 'string'
-      ? `.${element.className.trim().replace(/\s+/g, '.')}` : '';
+    const classes =
+      element.className && typeof element.className === 'string'
+        ? `.${element.className.trim().replace(/\s+/g, '.')}`
+        : '';
     const text = element.textContent ? element.textContent.trim().substring(0, 80) : '';
     const stepLabel = firstItemElement ? `${currentStep} (2/2)` : `${currentStep}`;
 
@@ -218,7 +215,7 @@
       action: 'pickerElementInfo',
       step: stepLabel,
       elementInfo: `<${tagName}${id}${classes}>`,
-      elementText: text.length >= 80 ? text + '...' : text,
+      elementText: text.length >= 80 ? text + '...' : text
     });
   }
 
@@ -346,7 +343,7 @@
       const mkItem = (el, listItem) => {
         const item = {
           text: el.textContent ? el.textContent.trim().replace(/\s+/g, ' ').substring(0, 150) : '',
-          html: el.outerHTML,
+          html: el.outerHTML
         };
         if (listItem && listItem !== el) {
           item.listHtml = listItem.outerHTML;
@@ -360,7 +357,7 @@
         const groups = [];
         for (const item of listItems) {
           const els = item.querySelectorAll(selector);
-          groups.push(Array.from(els).map(el => mkItem(el, item)));
+          groups.push(Array.from(els).map((el) => mkItem(el, item)));
         }
         return groups;
       }
@@ -402,9 +399,7 @@
     if (!attr) return el;
 
     if (attr === 'href') {
-      return el.matches('a[href]')
-        ? el
-        : (el.closest('a[href]') || el.querySelector('a[href]') || el);
+      return el.matches('a[href]') ? el : el.closest('a[href]') || el.querySelector('a[href]') || el;
     }
 
     try {
@@ -419,26 +414,24 @@
     const parsed = parseTextPreviewRule(rule);
     if (!parsed) return [];
 
-    const elements = Array.from(document.querySelectorAll('body *'))
-      .filter(el => !['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE'].includes(el.tagName));
+    const elements = Array.from(document.querySelectorAll('body *')).filter(
+      (el) => !['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE'].includes(el.tagName)
+    );
 
-    const exactMatches = elements.filter(el => normalizePreviewText(el.textContent) === parsed.text);
+    const exactMatches = elements.filter((el) => normalizePreviewText(el.textContent) === parsed.text);
     const matches = exactMatches.length
       ? exactMatches
-      : elements.filter(el => normalizePreviewText(el.textContent).includes(parsed.text));
+      : elements.filter((el) => normalizePreviewText(el.textContent).includes(parsed.text));
 
-    const minimalMatches = matches.filter(el => !matches.some(other => other !== el && el.contains(other)));
+    const minimalMatches = matches.filter((el) => !matches.some((other) => other !== el && el.contains(other)));
 
     const seen = new Set();
     const results = [];
-    minimalMatches.forEach(el => {
+    minimalMatches.forEach((el) => {
       const sourceEl = pickPreviewSourceElement(el, parsed.attr);
       if (seen.has(sourceEl)) return;
       seen.add(sourceEl);
-      results.push({
-        text: normalizePreviewText(sourceEl.textContent).substring(0, 150),
-        html: sourceEl.outerHTML,
-      });
+      results.push({ text: normalizePreviewText(sourceEl.textContent).substring(0, 150), html: sourceEl.outerHTML });
     });
     return results;
   }
@@ -490,11 +483,11 @@
         elementInfo: {
           id: firstItemElement.id || null,
           classes: firstItemElement.className ? firstItemElement.className.trim().split(/\s+/) : [],
-          text: firstItemElement.textContent ? firstItemElement.textContent.trim().substring(0, 100) : '',
+          text: firstItemElement.textContent ? firstItemElement.textContent.trim().substring(0, 100) : ''
         },
         isIntersection: true,
         warning: '',
-        previews,
+        previews
       });
 
       stopPicker();
@@ -511,7 +504,7 @@
       className: element.className,
       instanceofElement: element instanceof Element,
       instanceofHTMLElement: element instanceof HTMLElement,
-      constructorName: element.constructor?.name,
+      constructorName: element.constructor?.name
     });
 
     if (isInShadowDOM(element)) {
@@ -533,7 +526,9 @@
             break;
           }
         }
-      } catch (e) { /* skip */ }
+      } catch (e) {
+        /* skip */
+      }
     }
 
     const root = listItemRoot || rootElement || findSmartRoot(element);
@@ -547,14 +542,16 @@
       isSameAsElement: root === element,
       listItemRoot: listItemRoot ? { tag: listItemRoot.tagName, class: listItemRoot.className } : null,
       rootElement: rootElement ? { tag: rootElement.tagName, class: rootElement.className } : null,
-      smartRoot: findSmartRoot(element) ? { tag: findSmartRoot(element).tagName, class: findSmartRoot(element).className } : null,
+      smartRoot: findSmartRoot(element)
+        ? { tag: findSmartRoot(element).tagName, class: findSmartRoot(element).className }
+        : null
     });
 
     // When element IS the root (e.g., user clicked the list container itself),
     // getCssSelector returns empty because getTagPath(element, root) produces no path.
     // Fall back to using document.body as root so the selector is generated relative
     // to the full document instead.
-    const effectiveRoot = (root && root === element) ? document.body : root;
+    const effectiveRoot = root && root === element ? document.body : root;
 
     let selector;
     try {
@@ -563,7 +560,7 @@
       // [DEBUG] Log if getCssSelector throws
       console.error('[Picker:DEBUG] getCssSelector threw:', e.message, {
         elementTagName: element.tagName,
-        elementInstanceOfElement: element instanceof Element,
+        elementInstanceOfElement: element instanceof Element
       });
       showToast('选择器生成失败: ' + e.message, 'error');
       return;
@@ -573,7 +570,7 @@
     console.log('[Picker:DEBUG] confirmSelection — selector result:', {
       selector,
       selectorTrimmed: selector?.trim(),
-      isEmpty: !selector || selector.trim() === '',
+      isEmpty: !selector || selector.trim() === ''
     });
 
     if (!selector || selector.trim() === '') {
@@ -606,11 +603,11 @@
       elementInfo: {
         id: element.id || null,
         classes: element.className ? element.className.trim().split(/\s+/) : [],
-        text: element.textContent ? element.textContent.trim().substring(0, 100) : '',
+        text: element.textContent ? element.textContent.trim().substring(0, 100) : ''
       },
       root: root !== document.body ? getCssSelector(root, { root: document.body }) : null,
       warning: warnings.join('; '),
-      previews,
+      previews
     });
 
     stopPicker();
@@ -655,8 +652,8 @@
   }
 
   /**
-    * Stop picker mode
-    */
+   * Stop picker mode
+   */
   function stopPicker() {
     if (!isPickerActive) return;
 
@@ -669,7 +666,7 @@
     document.removeEventListener('keydown', handleKeyDown, true);
     window.removeEventListener('beforeunload', handleBeforeUnload);
 
-    document.querySelectorAll('.picker-hover, .picker-selected, .picker-first-item').forEach(el => {
+    document.querySelectorAll('.picker-hover, .picker-selected, .picker-first-item').forEach((el) => {
       el.classList.remove('picker-hover', 'picker-selected', 'picker-first-item');
     });
     currentHoveredElement = null;
@@ -727,9 +724,7 @@
     document.addEventListener('click', onExploreClick, true);
     document.addEventListener('keydown', onExploreKeydown, true);
 
-    safeSendMessage({
-      action: 'exploreCollectionStarted',
-    });
+    safeSendMessage({ action: 'exploreCollectionStarted' });
   }
 
   let exploreHoveredEl = null;
@@ -743,7 +738,7 @@
     safeSendMessage({
       action: 'exploreElementHover',
       elementInfo: `<a.${el.className ? el.className.trim().split(/\s+/)[0] : ''}>`,
-      elementText: el.textContent.trim().substring(0, 80),
+      elementText: el.textContent.trim().substring(0, 80)
     });
   }
 
@@ -775,11 +770,7 @@
     exploreCollectedItems.push({ title, url });
     showToast(`已添加: ${title}`, 'info');
 
-    safeSendMessage({
-      action: 'exploreItemCollected',
-      item: { title, url },
-      total: exploreCollectedItems.length,
-    });
+    safeSendMessage({ action: 'exploreItemCollected', item: { title, url }, total: exploreCollectedItems.length });
 
     el.classList.add('picker-selected');
     setTimeout(() => el.classList.remove('picker-selected'), 500);
@@ -804,10 +795,7 @@
       exploreHoveredEl = null;
     }
 
-    safeSendMessage({
-      action: 'exploreCollected',
-      items: exploreCollectedItems,
-    });
+    safeSendMessage({ action: 'exploreCollected', items: exploreCollectedItems });
 
     showToast(`已发送 ${exploreCollectedItems.length} 项`, 'info');
     exploreCollectedItems = [];
@@ -851,7 +839,7 @@
             const el = previewElements[i];
             previewResults.push({
               text: el.textContent ? el.textContent.trim().replace(/\s+/g, ' ').substring(0, 150) : '',
-              html: el.outerHTML,
+              html: el.outerHTML
             });
           }
           sendResponse({ previews: previewResults, count: previewCount });
@@ -888,5 +876,4 @@
   });
 
   console.log('Picker content script initialized');
-
 })();

@@ -9,7 +9,7 @@ const LIST_FIELD_KEYS = ['bookList', 'chapterList'];
 const LIST_SCOPED_FIELDS = {
   explore: ['name', 'author', 'kind', 'wordCount', 'lastChapter', 'intro', 'coverUrl', 'bookUrl'],
   search: ['name', 'author', 'kind', 'wordCount', 'lastChapter', 'intro', 'coverUrl', 'bookUrl', 'checkKeyWord'],
-  toc: ['chapterName', 'chapterUrl', 'isVolume', 'updateTime', 'isVip', 'isPay'],
+  toc: ['chapterName', 'chapterUrl', 'isVolume', 'updateTime', 'isVip', 'isPay']
 };
 
 function isListFieldKey(fieldKey) {

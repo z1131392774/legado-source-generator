@@ -4,7 +4,7 @@ const LIST_FIELD_KEYS = ['bookList', 'chapterList'];
 const LIST_SCOPED_FIELDS = {
   explore: ['name', 'author', 'kind', 'wordCount', 'lastChapter', 'intro', 'coverUrl', 'bookUrl'],
   search: ['name', 'author', 'kind', 'wordCount', 'lastChapter', 'intro', 'coverUrl', 'bookUrl', 'checkKeyWord'],
-  toc: ['chapterName', 'chapterUrl', 'isVolume', 'updateTime', 'isVip', 'isPay'],
+  toc: ['chapterName', 'chapterUrl', 'isVolume', 'updateTime', 'isVip', 'isPay']
 };
 const DEBUG_PREFIX = '<js>java.log("输入:" + result);</js>';
 const NEXT_PAGE_QUICK_INSERT_RULE = 'text.下一页@href';
@@ -22,8 +22,8 @@ const RULE_TYPES = {
       { key: 'lastChapter', label: '最新章节', required: false },
       { key: 'intro', label: '简介', required: false },
       { key: 'coverUrl', label: '封面URL', required: false },
-      { key: 'bookUrl', label: '详情页URL', required: false },
-    ],
+      { key: 'bookUrl', label: '详情页URL', required: false }
+    ]
   },
   search: {
     label: '搜索页',
@@ -37,8 +37,8 @@ const RULE_TYPES = {
       { key: 'intro', label: '简介', required: false },
       { key: 'coverUrl', label: '封面URL', required: false },
       { key: 'bookUrl', label: '详情页URL', required: false },
-      { key: 'checkKeyWord', label: '校验关键词', required: false },
-    ],
+      { key: 'checkKeyWord', label: '校验关键词', required: false }
+    ]
   },
   bookInfo: {
     label: '详情页',
@@ -50,8 +50,8 @@ const RULE_TYPES = {
       { key: 'lastChapter', label: '最新章节', required: false },
       { key: 'intro', label: '简介', required: false },
       { key: 'coverUrl', label: '封面URL', required: false },
-      { key: 'tocUrl', label: '目录链接', required: false },
-    ],
+      { key: 'tocUrl', label: '目录链接', required: false }
+    ]
   },
   toc: {
     label: '目录页',
@@ -63,8 +63,8 @@ const RULE_TYPES = {
       { key: 'updateTime', label: '更新时间', required: false },
       { key: 'isVip', label: 'VIP标识', required: false },
       { key: 'isPay', label: '付费标识', required: false },
-      { key: 'nextTocUrl', label: '下一页目录', required: false },
-    ],
+      { key: 'nextTocUrl', label: '下一页目录', required: false }
+    ]
   },
   content: {
     label: '正文页',
@@ -73,9 +73,9 @@ const RULE_TYPES = {
       { key: 'subContent', label: '后续正文', required: false },
       { key: 'title', label: '章节标题', required: false },
       { key: 'nextContentUrl', label: '下一页正文', required: false },
-      { key: 'webJs', label: '脚本注入', required: false },
-    ],
-  },
+      { key: 'webJs', label: '脚本注入', required: false }
+    ]
+  }
 };
 
 const DEFAULT_STATE = Object.freeze({
@@ -86,7 +86,7 @@ const DEFAULT_STATE = Object.freeze({
     search: { currentStep: 0, fields: {}, fieldStates: {}, bookListSelector: null },
     bookInfo: { currentStep: 0, fields: {}, fieldStates: {}, bookListSelector: null },
     toc: { currentStep: 0, fields: {}, fieldStates: {}, bookListSelector: null },
-    content: { currentStep: 0, fields: {}, fieldStates: {}, bookListSelector: null },
+    content: { currentStep: 0, fields: {}, fieldStates: {}, bookListSelector: null }
   },
   exploreUrl: '',
   searchUrl: '',
@@ -98,7 +98,7 @@ const DEFAULT_STATE = Object.freeze({
   searchConfig: null, // { method, url, charset, body, pageTemplate }
   headerItems: [],
   bookSourceComment: '',
-  loginCheckJs: '',
+  loginCheckJs: ''
 });
 
 let state = structuredClone(DEFAULT_STATE);
@@ -149,15 +149,17 @@ function renderModeTabs() {
     { key: 'basic', label: '基本' },
     { key: 'searchUrl', label: '搜索URL' },
     { key: 'exploreUrl', label: '发现页URL' },
-    { key: 'rules', label: '规则' },
+    { key: 'rules', label: '规则' }
   ];
 
-  container.innerHTML = modes.map(m => {
-    const active = m.key === state.activeMode ? ' active' : '';
-    return `<button class="rule-tab${active}" data-mode="${m.key}">${m.label}</button>`;
-  }).join('');
+  container.innerHTML = modes
+    .map((m) => {
+      const active = m.key === state.activeMode ? ' active' : '';
+      return `<button class="rule-tab${active}" data-mode="${m.key}">${m.label}</button>`;
+    })
+    .join('');
 
-  container.querySelectorAll('.rule-tab').forEach(btn => {
+  container.querySelectorAll('.rule-tab').forEach((btn) => {
     btn.addEventListener('click', () => {
       state.activeMode = btn.dataset.mode;
       saveState();
@@ -232,8 +234,8 @@ function loadState() {
         ? state.headerItems
         : [
             { key: 'User-Agent', value: state.advancedHeaderUa || '' },
-            { key: 'Referer', value: state.advancedHeaderRefer || '' },
-          ].filter(item => item.value);
+            { key: 'Referer', value: state.advancedHeaderRefer || '' }
+          ].filter((item) => item.value);
       state.headerItems = migrated;
       // Migrate old enableCfShield boolean -> loginCheckJs string
       if (state.enableCfShield === true && !state.loginCheckJs) {
@@ -305,27 +307,31 @@ function renderHeaderItems() {
   const container = document.getElementById('advancedHeadersList');
   if (!container) return;
   const items = Array.isArray(state.headerItems) ? state.headerItems : [];
-  container.innerHTML = items.map((item, index) => {
-    const key = (item?.key || '').replace(/"/g, '&quot;');
-    const value = (item?.value || '').replace(/"/g, '&quot;');
-    return `<div class="advanced-item" data-index="${index}">
+  container.innerHTML = items
+    .map((item, index) => {
+      const key = (item?.key || '').replace(/"/g, '&quot;');
+      const value = (item?.value || '').replace(/"/g, '&quot;');
+      return `<div class="advanced-item" data-index="${index}">
       <textarea class="input advanced-key" data-role="key" rows="1" placeholder="键">${key}</textarea>
       <textarea class="input advanced-value" data-role="value" rows="1" placeholder="值">${value}</textarea>
       <button class="btn btn-clear advanced-remove" data-action="remove" type="button">删除</button>
     </div>`;
-  }).join('');
-  container.querySelectorAll('textarea.input').forEach(el => autoResizeTextarea(el));
+    })
+    .join('');
+  container.querySelectorAll('textarea.input').forEach((el) => autoResizeTextarea(el));
 }
 
 function collectHeaderItemsFromDom() {
   const container = document.getElementById('advancedHeadersList');
   if (!container) return [];
   const rows = Array.from(container.querySelectorAll('.advanced-item'));
-  return rows.map(row => {
-    const key = row.querySelector('[data-role="key"]')?.value?.trim() || '';
-    const value = row.querySelector('[data-role="value"]')?.value?.trim() || '';
-    return { key, value };
-  }).filter(item => item.key || item.value);
+  return rows
+    .map((row) => {
+      const key = row.querySelector('[data-role="key"]')?.value?.trim() || '';
+      const value = row.querySelector('[data-role="value"]')?.value?.trim() || '';
+      return { key, value };
+    })
+    .filter((item) => item.key || item.value);
 }
 
 function addHeaderItem(key = '', value = '') {
@@ -415,8 +421,8 @@ function buildNativeIndexRule(baseSelector, fieldKey, fieldData, isListField) {
       return baseSelector;
     }
 
-    const nativeStart = (start > 1) ? start - 1 : '';
-    const nativeEnd = (end > 0) ? end - 1 : (end < 0 ? end : '');
+    const nativeStart = start > 1 ? start - 1 : '';
+    const nativeEnd = end > 0 ? end - 1 : end < 0 ? end : '';
 
     if (nativeStart === '' && nativeEnd === '') return baseSelector;
     if (nativeStart === '' && nativeEnd !== '') return `${baseSelector}[:${nativeEnd}]`;
@@ -466,7 +472,8 @@ function buildJsIndexRule(baseSelector, fieldKey, fieldData, isListField) {
 
     const startExpr = startVal > 1 ? startVal - 1 : 0;
     if (startVal > 1 || endVal > 0 || endVal < -1) {
-      return buildJsRule(`        var doc = org.jsoup.Jsoup.parse(result);
+      return buildJsRule(
+        `        var doc = org.jsoup.Jsoup.parse(result);
         var list = doc.select("${baseSelector}");
         var start = ${startExpr};
         var end = ${endExpr};
@@ -474,12 +481,17 @@ function buildJsIndexRule(baseSelector, fieldKey, fieldData, isListField) {
         for (var i = start; i < end; i++) {
           result.add(list.get(i));
         }
-        return result;`, true);
+        return result;`,
+        true
+      );
     }
 
-    return buildJsRule(`        var doc = org.jsoup.Jsoup.parse(result);
+    return buildJsRule(
+      `        var doc = org.jsoup.Jsoup.parse(result);
         var list = doc.select("${baseSelector}");
-        return list;`, true);
+        return list;`,
+      true
+    );
   }
 
   const selectedTag = fieldData.tagName || '';
@@ -527,13 +539,13 @@ function renderRuleTypeTabs() {
   const container = document.getElementById('ruleTypeTabs');
   if (!container) return;
 
-  container.innerHTML = RULE_TYPE_ORDER.map(key => {
+  container.innerHTML = RULE_TYPE_ORDER.map((key) => {
     const cfg = RULE_TYPES[key];
     const active = key === state.activeRuleType ? ' active' : '';
     return `<button class="rule-tab${active}" data-type="${key}">${cfg.label}</button>`;
   }).join('');
 
-  container.querySelectorAll('.rule-tab').forEach(btn => {
+  container.querySelectorAll('.rule-tab').forEach((btn) => {
     btn.addEventListener('click', () => {
       state.activeRuleType = btn.dataset.type;
       saveState();
@@ -604,7 +616,7 @@ function renderFields() {
   const fieldState = rule.fieldStates[field.key] || 'pending';
   const isLinkField = LINK_FIELDS.includes(field.key);
   const rawValue = fieldData.value || '';
-  const value = (fieldData.webView && isLinkField && rawValue) ? applyWebView(rawValue) : rawValue;
+  const value = fieldData.webView && isLinkField && rawValue ? applyWebView(rawValue) : rawValue;
   const isNativeListField = isListFieldKey(field.key);
   const isPickerListField = isNativeListField;
   const fieldIndex = fieldData.listIndex || {};
@@ -612,7 +624,7 @@ function renderFields() {
   // Get list field's index range for non-list fields so they respect the list range
   let listIndexRange = null;
   if (!isPickerListField && isListScopedField(state.activeRuleType, field.key)) {
-    const listFields = fields.filter(f => isListFieldKey(f.key));
+    const listFields = fields.filter((f) => isListFieldKey(f.key));
     if (listFields.length > 0) {
       const listFieldData = rule.fields[listFields[0].key] || {};
       listIndexRange = listFieldData.listIndex || null;
@@ -628,7 +640,7 @@ function renderFields() {
     ? `<button id="quickNextPageRuleBtn" class="btn btn-action" title="插入 ${escapeHtml(NEXT_PAGE_QUICK_INSERT_RULE)}">预设规则</button>`
     : '';
 
-  const indexHTML = (isNativeListField
+  const indexHTML = isNativeListField
     ? `<div class="index-row">
         <div class="index-mode-row">
           <div style="display:flex;align-items:center;gap:8px">
@@ -674,7 +686,7 @@ function renderFields() {
           <input type="text" id="indexSingle" class="input input--center input--50" value="${escapeHtml(fieldIndex.single || '')}" placeholder="1">
           <button id="indexApplyBtn" class="btn btn-action btn-index-apply">确认</button>
         </div>
-      </div>`);
+      </div>`;
 
   container.innerHTML = `
     <div class="field-item">
@@ -694,24 +706,33 @@ function renderFields() {
         ${fieldState === 'selected' ? `<button id="clearBtn" class="btn btn-action btn-clear">清空</button>` : ''}
       </div>
       ${indexHTML}
-      ${isPickerListField ? `
+      ${
+        isPickerListField
+          ? `
       <div class="list-hint">⚠️ <strong>需要选择两个同列表元素</strong>，自动提取交集生成选择器</div>
-      ` : ''}
-      ${fieldState === 'selected' && (fieldData.rawSelector || fieldData.value) ? `
+      `
+          : ''
+      }
+      ${
+        fieldState === 'selected' && (fieldData.rawSelector || fieldData.value)
+          ? `
         <div class="selector-info">
           <span class="selector-label">规则:</span>
           <code class="selector-value">${escapeHtml(fieldData.value || fieldData.rawSelector || '')}</code>
         </div>
-        ${filteredPreviews && filteredPreviews.length > 0 ? `
+        ${
+          filteredPreviews && filteredPreviews.length > 0
+            ? `
           <div class="preview-section">
             <div class="preview-header" data-toggle="preview">
               <span class="preview-toggle">▶</span>
               预览 (${filteredPreviews.length} 个匹配)
             </div>
             <div class="preview-list hidden">
-              ${filteredPreviews.map((p, i) => {
-                const ep = applyPreviewExtraction(p, fieldData.value);
-                return `
+              ${filteredPreviews
+                .map((p, i) => {
+                  const ep = applyPreviewExtraction(p, fieldData.value);
+                  return `
                 <div class="preview-item">
                   <div class="preview-item-header">
                     <span class="preview-index">#${i + 1}</span>
@@ -719,11 +740,16 @@ function renderFields() {
                   </div>
                   ${ep.html ? `<div class="preview-html"><pre class="preview-code">${escapeHtml(ep.html)}</pre></div>` : ''}
                 </div>`;
-              }).join('')}
+                })
+                .join('')}
             </div>
           </div>
-        ` : ''}
-      ` : ''}
+        `
+            : ''
+        }
+      `
+          : ''
+      }
     </div>
   `;
 
@@ -734,16 +760,17 @@ function renderSummaryView(container) {
   const fields = getFields();
   const rule = getRuleState();
 
-  const rows = fields.map((f, index) => {
-    const fieldState = rule.fieldStates[f.key] || 'pending';
-    const fieldData = rule.fields[f.key] || {};
-    const stateDot = `<span class="state-dot state-dot--${fieldState}" title="${fieldState === 'selected' ? '已配置' : fieldState === 'picking' ? '选择中' : '未配置'}"></span>`;
+  const rows = fields
+    .map((f, index) => {
+      const fieldState = rule.fieldStates[f.key] || 'pending';
+      const fieldData = rule.fields[f.key] || {};
+      const stateDot = `<span class="state-dot state-dot--${fieldState}" title="${fieldState === 'selected' ? '已配置' : fieldState === 'picking' ? '选择中' : '未配置'}"></span>`;
 
-    const isLinkField = LINK_FIELDS.includes(f.key);
-    const rawValue = fieldData.value || '';
-    const value = (fieldData.webView && isLinkField && rawValue) ? applyWebView(rawValue) : rawValue;
+      const isLinkField = LINK_FIELDS.includes(f.key);
+      const rawValue = fieldData.value || '';
+      const value = fieldData.webView && isLinkField && rawValue ? applyWebView(rawValue) : rawValue;
 
-    return `
+      return `
       <div class="summary-row" data-step-index="${index}">
         <div class="summary-field-info">
           ${stateDot}
@@ -752,7 +779,8 @@ function renderSummaryView(container) {
         <textarea class="input summary-field-value" rows="1" data-field-key="${f.key}" placeholder="未配置">${escapeHtml(value)}</textarea>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 
   container.innerHTML = `
     <div class="field-item summary-view">
@@ -764,7 +792,7 @@ function renderSummaryView(container) {
   `;
 
   // Bind field name click to jump
-  container.querySelectorAll('.summary-field-name').forEach(el => {
+  container.querySelectorAll('.summary-field-name').forEach((el) => {
     el.addEventListener('click', () => {
       const stepIndex = parseInt(el.dataset.stepIndex, 10);
       if (!Number.isNaN(stepIndex)) {
@@ -774,7 +802,7 @@ function renderSummaryView(container) {
   });
 
   // Bind textarea input to save
-  container.querySelectorAll('.summary-field-value').forEach(el => {
+  container.querySelectorAll('.summary-field-value').forEach((el) => {
     autoResizeTextarea(el);
     el.addEventListener('input', (e) => {
       const key = e.target.dataset.fieldKey;
@@ -803,9 +831,10 @@ function bindFieldEvents() {
   const cancelBtn = document.getElementById('cancelBtn');
   if (cancelBtn) cancelBtn.addEventListener('click', handleCancelSelection);
   const confirmBtn = document.getElementById('confirmBtn');
-  if (confirmBtn) confirmBtn.addEventListener('click', () => {
-    document.getElementById('fieldValue')?.blur();
-  });
+  if (confirmBtn)
+    confirmBtn.addEventListener('click', () => {
+      document.getElementById('fieldValue')?.blur();
+    });
   const fieldValue = document.getElementById('fieldValue');
   if (fieldValue) {
     fieldValue.addEventListener('input', handleFieldInput);
@@ -904,61 +933,55 @@ function handleSelectElement() {
     if (!tabs[0]) return;
     const tabId = tabs[0].id;
 
-    chrome.tabs.sendMessage(tabId, {
-      action: 'startPicker',
-      step: field.key,
-      isListField,
-      rootSelector,
-      itemSelector,
-    }, (response) => {
-      if (chrome.runtime.lastError) {
-        reInjectContentScript(tabId, field.key, isListField, rootSelector, itemSelector);
+    chrome.tabs.sendMessage(
+      tabId,
+      { action: 'startPicker', step: field.key, isListField, rootSelector, itemSelector },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          reInjectContentScript(tabId, field.key, isListField, rootSelector, itemSelector);
+        }
       }
-    });
+    );
   });
 }
 
 function reInjectContentScript(tabId, step, isListField, rootSelector, itemSelector) {
-  const injectJS = typeof chrome.scripting !== 'undefined'
-    ? () => chrome.scripting.executeScript({
-        target: { tabId },
-        files: ['lib/selector-generator.js', 'content/picker.js'],
-      })
-    : () => new Promise((resolve, reject) => {
-        chrome.tabs.executeScript(tabId, { file: '/lib/selector-generator.js' }, () => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
-            return;
-          }
-          chrome.tabs.executeScript(tabId, { file: '/content/picker.js' }, () => {
-            if (chrome.runtime.lastError) {
-              reject(new Error(chrome.runtime.lastError.message));
-              return;
-            }
-            resolve();
+  const injectJS =
+    typeof chrome.scripting !== 'undefined'
+      ? () =>
+          chrome.scripting.executeScript({
+            target: { tabId },
+            files: ['lib/selector-generator.js', 'content/picker.js']
+          })
+      : () =>
+          new Promise((resolve, reject) => {
+            chrome.tabs.executeScript(tabId, { file: '/lib/selector-generator.js' }, () => {
+              if (chrome.runtime.lastError) {
+                reject(new Error(chrome.runtime.lastError.message));
+                return;
+              }
+              chrome.tabs.executeScript(tabId, { file: '/content/picker.js' }, () => {
+                if (chrome.runtime.lastError) {
+                  reject(new Error(chrome.runtime.lastError.message));
+                  return;
+                }
+                resolve();
+              });
+            });
           });
-        });
-      });
 
-  const injectCSS = typeof chrome.scripting !== 'undefined'
-    ? () => chrome.scripting.insertCSS({
-        target: { tabId },
-        files: ['content/picker.css'],
-      })
-    : () => new Promise((resolve) => {
-        chrome.tabs.insertCSS(tabId, { file: 'content/picker.css' }, resolve);
-      });
+  const injectCSS =
+    typeof chrome.scripting !== 'undefined'
+      ? () => chrome.scripting.insertCSS({ target: { tabId }, files: ['content/picker.css'] })
+      : () =>
+          new Promise((resolve) => {
+            chrome.tabs.insertCSS(tabId, { file: 'content/picker.css' }, resolve);
+          });
 
   injectJS().then(() => {
     injectCSS();
     setTimeout(() => {
-      chrome.tabs.sendMessage(tabId, {
-        action: 'startPicker',
-        step,
-        isListField,
-        rootSelector,
-        itemSelector,
-      });
+      chrome.tabs.sendMessage(tabId, { action: 'startPicker', step, isListField, rootSelector, itemSelector });
     }, 200);
   });
 }
@@ -1029,19 +1052,13 @@ function parseTextRule(input) {
 
   let text = match[1].trim();
   const indexMatch = text.match(/^(.*)\.(-?\d+)$/);
-  const index = indexMatch && indexMatch[1].trim()
-    ? parseInt(indexMatch[2], 10)
-    : null;
+  const index = indexMatch && indexMatch[1].trim() ? parseInt(indexMatch[2], 10) : null;
   if (index !== null) {
     text = indexMatch[1].trim();
   }
 
   const attrMatch = raw.match(/@([^@\s]+)$/);
-  return {
-    text,
-    attr: attrMatch ? attrMatch[1] : '',
-    index,
-  };
+  return { text, attr: attrMatch ? attrMatch[1] : '', index };
 }
 
 function buildTextRule(parsed, index) {
@@ -1230,9 +1247,8 @@ function handleIndexApply() {
   // JS mode: skip text rules when rawSelector is a CSS selector (text-only
   // rules like "text.xxx" have no selector to select, keep them as-is)
   const isTextRule = !isListField && parseTextRule(baseSelector) !== null;
-  const textRule = fieldData.useJsIndex && !isTextRule
-    ? ''
-    : buildTextIndexedRule(baseSelector, fieldData, isListField);
+  const textRule =
+    fieldData.useJsIndex && !isTextRule ? '' : buildTextIndexedRule(baseSelector, fieldData, isListField);
   const nextValue = textRule || buildIndexedRule(baseSelector, field.key, fieldData, isListField);
   rule.fields[field.key].value = applyDebugPrefix(nextValue, fieldData.debug);
 
@@ -1271,15 +1287,15 @@ function applyPreviewExtraction(p, ruleValue) {
     case 'ownText':
       // Element's own text, excluding children's text
       extracted = Array.from(el.childNodes)
-        .filter(n => n.nodeType === Node.TEXT_NODE)
-        .map(n => n.textContent)
+        .filter((n) => n.nodeType === Node.TEXT_NODE)
+        .map((n) => n.textContent)
         .join('');
       break;
     case 'textNodes':
       // Direct text child nodes, joined with newline
       extracted = Array.from(el.childNodes)
-        .filter(n => n.nodeType === Node.TEXT_NODE)
-        .map(n => n.textContent.trim())
+        .filter((n) => n.nodeType === Node.TEXT_NODE)
+        .map((n) => n.textContent.trim())
         .filter(Boolean)
         .join('\n');
       break;
@@ -1343,9 +1359,9 @@ function filterPreviewsByIndex(previews, index, isListField, listRange) {
 
       if (isGrouped) {
         const placeholder = { text: '', html: '' };
-        return groups.map(group => {
+        return groups.map((group) => {
           const i = resolveArrayIndex(itemIndex, group.length);
-          return (i >= 0 && i < group.length) ? group[i] : placeholder;
+          return i >= 0 && i < group.length ? group[i] : placeholder;
         });
       }
       const i = resolveArrayIndex(itemIndex, groups.length);
@@ -1485,8 +1501,7 @@ function updateNavButtons() {
   const fields = getFields();
   const rule = getRuleState();
   document.getElementById('prevBtn').disabled = rule.currentStep === 0;
-  document.getElementById('nextBtn').textContent =
-    rule.currentStep === fields.length ? '完成' : '下一步';
+  document.getElementById('nextBtn').textContent = rule.currentStep === fields.length ? '完成' : '下一步';
 }
 
 function renderFieldStatusSummary() {
@@ -1495,18 +1510,20 @@ function renderFieldStatusSummary() {
 
   const fields = getFields();
   const rule = getRuleState();
-  const summary = fields.map((f, index) => {
-    const fieldState = rule.fieldStates[f.key] || 'pending';
-    const activeClass = index === rule.currentStep ? ' active' : '';
-    return `<span class="status-item status-item--${fieldState}${activeClass}" data-field="${f.key}" data-step-index="${index}">${f.label}</span>`;
-  }).join('');
+  const summary = fields
+    .map((f, index) => {
+      const fieldState = rule.fieldStates[f.key] || 'pending';
+      const activeClass = index === rule.currentStep ? ' active' : '';
+      return `<span class="status-item status-item--${fieldState}${activeClass}" data-field="${f.key}" data-step-index="${index}">${f.label}</span>`;
+    })
+    .join('');
 
   const summaryActiveClass = rule.currentStep === fields.length ? ' active' : '';
   const summaryHtml = `<span class="status-item status-item--summary${summaryActiveClass}" data-step-index="${fields.length}">汇总</span>`;
 
   summaryContainer.innerHTML = summary + summaryHtml;
 
-  summaryContainer.querySelectorAll('.status-item').forEach(item => {
+  summaryContainer.querySelectorAll('.status-item').forEach((item) => {
     item.addEventListener('click', () => {
       const stepIndex = parseInt(item.dataset.stepIndex, 10);
       if (!Number.isNaN(stepIndex)) {
@@ -1579,8 +1596,8 @@ function bindEvents() {
     renderImportTree();
   });
   document.getElementById('importInvertBtn')?.addEventListener('click', () => {
-    IMPORT_CATEGORIES.forEach(cat => {
-      cat.items.forEach(item => {
+    IMPORT_CATEGORIES.forEach((cat) => {
+      cat.items.forEach((item) => {
         const key = buildSelectionKey(cat.key, item.key);
         importSelection[key] = !importSelection[key];
       });
@@ -1710,7 +1727,7 @@ function handleCheckUpdate() {
   statusEl.textContent = '';
 
   getLatestVersionWithFallback()
-    .then(latest => {
+    .then((latest) => {
       latestEl.textContent = latest;
       const compareResult = compareVersions(latest, currentVersion);
 
@@ -1752,9 +1769,7 @@ async function fetchLatestTagVersion(url, fieldName) {
   const data = await res.json();
   if (!Array.isArray(data) || data.length === 0) throw new Error('No tags found');
 
-  const versions = data
-    .map(item => normalizeTagVersion(item?.[fieldName]))
-    .filter(Boolean);
+  const versions = data.map((item) => normalizeTagVersion(item?.[fieldName])).filter(Boolean);
 
   if (!versions.length) throw new Error('No valid semver tag found');
 
@@ -1771,8 +1786,12 @@ function normalizeTagVersion(tagName) {
 }
 
 function compareVersions(a, b) {
-  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0);
-  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
+  const pa = String(a)
+    .split('.')
+    .map((n) => parseInt(n, 10) || 0);
+  const pb = String(b)
+    .split('.')
+    .map((n) => parseInt(n, 10) || 0);
   const length = Math.max(pa.length, pb.length);
 
   for (let i = 0; i < length; i += 1) {
@@ -1877,12 +1896,14 @@ function handleExport() {
 }
 
 function generateJson() {
-  const exploreResult = typeof window.getExploreJsonString === 'function'
-    ? window.getExploreJsonString()
-    : (state.exploreUrl || '');
-  const exploreUrlValue = typeof exploreResult === 'string'
-    ? exploreResult
-    : (exploreResult.length > 0 ? JSON.stringify(exploreResult, null, 2) : '');
+  const exploreResult =
+    typeof window.getExploreJsonString === 'function' ? window.getExploreJsonString() : state.exploreUrl || '';
+  const exploreUrlValue =
+    typeof exploreResult === 'string'
+      ? exploreResult
+      : exploreResult.length > 0
+        ? JSON.stringify(exploreResult, null, 2)
+        : '';
 
   const result = {
     ruleSearch: buildRuleSection('search'),
@@ -1895,17 +1916,16 @@ function generateJson() {
     bookUrlPattern: (state.bookUrlPattern || '').trim(),
     bookSourceName: (state.bookSourceName || '').trim(),
     searchUrl: state.searchUrl || '',
-    exploreUrl: exploreUrlValue,
+    exploreUrl: exploreUrlValue
   };
 
   const items = Array.isArray(state.headerItems) ? state.headerItems : [];
-  const hasMobileUA = items.some(item =>
-    (item?.key || '').trim() === 'User-Agent' &&
-    (item?.value || '').includes('java.getWebViewUA()')
+  const hasMobileUA = items.some(
+    (item) => (item?.key || '').trim() === 'User-Agent' && (item?.value || '').includes('java.getWebViewUA()')
   );
   if (hasMobileUA) {
     const pairs = [];
-    items.forEach(item => {
+    items.forEach((item) => {
       const key = (item?.key || '').trim();
       const value = (item?.value || '').trim();
       if (!key || !value) return;
@@ -1918,17 +1938,17 @@ function generateJson() {
     result.header = `@js:\nJSON.stringify({\n${pairs.join(',\n')}\n})`;
   } else {
     const header = {};
-    items.forEach(item => {
+    items.forEach((item) => {
       const key = (item?.key || '').trim();
       const value = (item?.value || '').trim();
       if (key && value) {
         header[key] = value;
       }
     });
-    result.header = Object.keys(header).length > 0 ? header : "";
+    result.header = Object.keys(header).length > 0 ? header : '';
   }
-  result.loginCheckJs = state.loginCheckJs?.trim() || "";
-  result.bookSourceComment = state.bookSourceComment?.trim() || "";
+  result.loginCheckJs = state.loginCheckJs?.trim() || '';
+  result.bookSourceComment = state.bookSourceComment?.trim() || '';
 
   return result;
 }
@@ -1945,14 +1965,14 @@ function applyWebView(rule) {
     if (catchIdx !== -1) {
       const tryPart = rule.substring(0, catchIdx);
       const catchPart = rule.substring(catchIdx);
-      const modified = tryPart.replace(/return\s+([^;]+);/g, "return $1 + ',{\"webView\":true}';");
+      const modified = tryPart.replace(/return\s+([^;]+);/g, 'return $1 + \',{"webView":true}\';');
       return modified + catchPart;
     }
     // Fallback: no catch block found, replace all returns
-    return rule.replace(/return\s+([^;]+);/g, "return $1 + ',{\"webView\":true}';");
+    return rule.replace(/return\s+([^;]+);/g, 'return $1 + \',{"webView":true}\';');
   } else {
     // Pure selector: append @js suffix
-    return rule + "@js:result+',{\"webView\":true}'";
+    return rule + '@js:result+\',{"webView":true}\'';
   }
 }
 
@@ -1979,7 +1999,7 @@ function buildRuleSection(type) {
   const fields = RULE_TYPES[type].fields;
   const section = {};
 
-  fields.forEach(field => {
+  fields.forEach((field) => {
     const fieldData = rule.fields[field.key];
     if (fieldData && fieldData.value) {
       let value = fieldData.value;
@@ -1990,17 +2010,20 @@ function buildRuleSection(type) {
     }
   });
 
-  return Object.keys(section).length > 0 ? section : "";
+  return Object.keys(section).length > 0 ? section : '';
 }
 
 function handleCopy() {
   const textarea = document.getElementById('jsonOutput');
-  navigator.clipboard.writeText(textarea.value).then(() => {
-    showToast('已复制到剪贴板', 'info');
-  }).catch(() => {
-    textarea.select();
-    document.execCommand('copy');
-  });
+  navigator.clipboard
+    .writeText(textarea.value)
+    .then(() => {
+      showToast('已复制到剪贴板', 'info');
+    })
+    .catch(() => {
+      textarea.select();
+      document.execCommand('copy');
+    });
 }
 
 function handleDownload() {
@@ -2019,8 +2042,8 @@ function handleDownload() {
 //    Import JSON Config
 // ============================================
 
-let importSelection = null;      // Current import selection (map of key -> boolean)
-let parsedImportJson = null;    // Successfully parsed import JSON
+let importSelection = null; // Current import selection (map of key -> boolean)
+let parsedImportJson = null; // Successfully parsed import JSON
 
 function openImportModal() {
   const modal = document.getElementById('importModal');
@@ -2127,29 +2150,38 @@ function renderImportTree() {
 
   let html = '';
 
-  IMPORT_CATEGORIES.forEach(cat => {
+  IMPORT_CATEGORIES.forEach((cat) => {
     // Count selected children
     const total = cat.items.length;
-    const selected = cat.items.filter(item => importSelection[buildSelectionKey(cat.key, item.key)]).length;
+    const selected = cat.items.filter((item) => importSelection[buildSelectionKey(cat.key, item.key)]).length;
     const allSelected = selected === total;
 
     html += '<div class="import-tree-category">';
     html += '<label class="import-tree-parent">';
-    html += '<input type="checkbox" class="import-cat-check" '
-      + 'data-cat="' + cat.key + '"'
-      + (allSelected ? ' checked' : '')
-      + '>';
+    html +=
+      '<input type="checkbox" class="import-cat-check" ' +
+      'data-cat="' +
+      cat.key +
+      '"' +
+      (allSelected ? ' checked' : '') +
+      '>';
     html += '<span class="import-cat-label">' + cat.label + '</span>';
     html += '</label>';
 
     html += '<div class="import-tree-children">';
-    cat.items.forEach(item => {
+    cat.items.forEach((item) => {
       const selKey = buildSelectionKey(cat.key, item.key);
       const checked = importSelection[selKey] ? ' checked' : '';
       html += '<label class="import-tree-child">';
-      html += '<input type="checkbox" class="import-item-check" '
-        + 'data-cat="' + cat.key + '" data-key="' + item.key + '"'
-        + checked + '>';
+      html +=
+        '<input type="checkbox" class="import-item-check" ' +
+        'data-cat="' +
+        cat.key +
+        '" data-key="' +
+        item.key +
+        '"' +
+        checked +
+        '>';
       html += '<span>' + item.label + '</span>';
       html += '</label>';
     });
@@ -2160,25 +2192,25 @@ function renderImportTree() {
   container.innerHTML = html;
 
   // Set indeterminate state on category checkboxes with partial selection
-  container.querySelectorAll('.import-cat-check').forEach(cb => {
+  container.querySelectorAll('.import-cat-check').forEach((cb) => {
     const catKey = cb.dataset.cat;
-    const cat = IMPORT_CATEGORIES.find(c => c.key === catKey);
+    const cat = IMPORT_CATEGORIES.find((c) => c.key === catKey);
     if (cat) {
       const total = cat.items.length;
-      const selected = cat.items.filter(item => importSelection[buildSelectionKey(catKey, item.key)]).length;
+      const selected = cat.items.filter((item) => importSelection[buildSelectionKey(catKey, item.key)]).length;
       cb.indeterminate = selected > 0 && selected < total;
     }
   });
 
   // Bind category checkbox events
-  container.querySelectorAll('.import-cat-check').forEach(cb => {
+  container.querySelectorAll('.import-cat-check').forEach((cb) => {
     cb.addEventListener('change', function () {
       const catKey = this.dataset.cat;
       const checked = this.checked;
       // Set all child items
-      const cat = IMPORT_CATEGORIES.find(c => c.key === catKey);
+      const cat = IMPORT_CATEGORIES.find((c) => c.key === catKey);
       if (cat) {
-        cat.items.forEach(item => {
+        cat.items.forEach((item) => {
           importSelection[buildSelectionKey(catKey, item.key)] = checked;
         });
       }
@@ -2186,12 +2218,14 @@ function renderImportTree() {
 
       // Update child checkboxes visually
       const children = container.querySelectorAll('.import-item-check[data-cat="' + catKey + '"]');
-      children.forEach(child => { child.checked = checked; });
+      children.forEach((child) => {
+        child.checked = checked;
+      });
     });
   });
 
   // Bind item checkbox events
-  container.querySelectorAll('.import-item-check').forEach(cb => {
+  container.querySelectorAll('.import-item-check').forEach((cb) => {
     cb.addEventListener('change', function () {
       const catKey = this.dataset.cat;
       const itemKey = this.dataset.key;
@@ -2208,11 +2242,11 @@ function updateParentCheckbox(container, catKey) {
   const parentCb = container.querySelector('.import-cat-check[data-cat="' + catKey + '"]');
   if (!parentCb) return;
 
-  const cat = IMPORT_CATEGORIES.find(c => c.key === catKey);
+  const cat = IMPORT_CATEGORIES.find((c) => c.key === catKey);
   if (!cat) return;
 
   const total = cat.items.length;
-  const selected = cat.items.filter(item => importSelection[buildSelectionKey(catKey, item.key)]).length;
+  const selected = cat.items.filter((item) => importSelection[buildSelectionKey(catKey, item.key)]).length;
 
   parentCb.checked = selected === total;
   parentCb.indeterminate = selected > 0 && selected < total;
@@ -2276,13 +2310,31 @@ function syncDomFromState() {
   const patternEl = document.getElementById('bookUrlPattern');
   const searchEl = document.getElementById('searchUrlTemplate');
 
-  if (nameEl) { nameEl.value = state.bookSourceName || ''; autoResizeTextarea(nameEl); }
-  if (urlEl) { urlEl.value = state.bookSourceUrl || ''; autoResizeTextarea(urlEl); }
-  if (commentEl) { commentEl.value = state.bookSourceComment || ''; autoResizeTextarea(commentEl); }
-  if (loginEl) { loginEl.value = state.loginCheckJs || ''; autoResizeTextarea(loginEl); }
+  if (nameEl) {
+    nameEl.value = state.bookSourceName || '';
+    autoResizeTextarea(nameEl);
+  }
+  if (urlEl) {
+    urlEl.value = state.bookSourceUrl || '';
+    autoResizeTextarea(urlEl);
+  }
+  if (commentEl) {
+    commentEl.value = state.bookSourceComment || '';
+    autoResizeTextarea(commentEl);
+  }
+  if (loginEl) {
+    loginEl.value = state.loginCheckJs || '';
+    autoResizeTextarea(loginEl);
+  }
   if (typeEl) typeEl.value = String(state.bookSourceType || 0);
-  if (patternEl) { patternEl.value = state.bookUrlPattern || ''; autoResizeTextarea(patternEl); }
-  if (searchEl) { searchEl.value = state.searchUrl || ''; autoResizeTextarea(searchEl); }
+  if (patternEl) {
+    patternEl.value = state.bookUrlPattern || '';
+    autoResizeTextarea(patternEl);
+  }
+  if (searchEl) {
+    searchEl.value = state.searchUrl || '';
+    autoResizeTextarea(searchEl);
+  }
 }
 
 function closeModal() {
@@ -2363,7 +2415,7 @@ function toLegadoRule(selector, fieldKey, fieldData, tagName, listItemTag) {
   const nextFieldData = {
     ...fieldData,
     tagName: tagName || fieldData.tagName || '',
-    listItemTagName: listItemTag || fieldData.listItemTagName || '',
+    listItemTagName: listItemTag || fieldData.listItemTagName || ''
   };
   return buildIndexedRule(selector, fieldKey, nextFieldData, isListField);
 }
@@ -2372,7 +2424,7 @@ function handleSelectorSelected(message) {
   const { selector, step, previews } = message;
 
   const fields = getFields();
-  const field = fields.find(f => f.key === step);
+  const field = fields.find((f) => f.key === step);
 
   if (!field) {
     console.error('Unknown field step:', step);
@@ -2389,7 +2441,7 @@ function handleSelectorSelected(message) {
     rawSelector: selector,
     tagName: message.tagName || '',
     listItemTagName: message.listItemTagName || '',
-    previews: previews || [],
+    previews: previews || []
   };
   rule.fieldStates[step] = 'selected';
 
@@ -2486,7 +2538,8 @@ function updatePickerStatus(message) {
   const stepEl = document.getElementById('pickerStatusStep');
   const elementEl = document.getElementById('pickerStatusElement');
   if (stepEl) stepEl.textContent = message.step || '-';
-  if (elementEl) elementEl.textContent = message.elementInfo ? `${message.elementInfo} ${message.elementText || ''}` : '-';
+  if (elementEl)
+    elementEl.textContent = message.elementInfo ? `${message.elementInfo} ${message.elementText || ''}` : '-';
 }
 
 /**
@@ -2495,11 +2548,7 @@ function updatePickerStatus(message) {
  * @param {string} type - Toast type: 'warning' | 'error' | 'info'
  */
 function showToast(message, type = 'warning') {
-  const colors = {
-    warning: '#faad14',
-    error: '#ff4d4f',
-    info: '#1890ff'
-  };
+  const colors = { warning: '#faad14', error: '#ff4d4f', info: '#1890ff' };
 
   let container = document.getElementById('popup-toast-container');
   if (!container) {
@@ -2630,7 +2679,7 @@ function showSearchCaptureForm(data) {
   bodyEl.value = data.body || '';
 
   const webViewEl = document.getElementById('searchWebView');
-  webViewEl.value = (data.webView === true || data.webView === 'true') ? 'true' : 'false';
+  webViewEl.value = data.webView === true || data.webView === 'true' ? 'true' : 'false';
 
   // Build complete Legado-format search URL
   const method = methodEl.value;
@@ -2744,14 +2793,14 @@ function handleSearchCaptured(message) {
     method: message.method,
     url: message.url,
     charset: message.charset,
-    body: message.body,
+    body: message.body
   });
   showSearchCaptureForm({
     method: message.method,
     url: message.url,
     charset: message.charset,
     body: message.body,
-    forms: message.forms,
+    forms: message.forms
   });
 }
 
@@ -2762,25 +2811,19 @@ function handleSearchCaptureForms(message) {
   if (searchCaptureReceived || searchCaptureCancelled) return;
 
   if (message.forms && message.forms.length > 0) {
-    const form = message.forms.find(f => f.hasSearchInput) || message.forms[0];
+    const form = message.forms.find((f) => f.hasSearchInput) || message.forms[0];
     if (form && form.action) {
       showSearchCaptureForm({
         method: form.method,
         url: form.action,
         charset: form.charset,
         body: '',
-        forms: message.forms,
+        forms: message.forms
       });
       return;
     }
   }
 
   // No forms found, show blank form
-  showSearchCaptureForm({
-    method: 'GET',
-    url: '',
-    charset: message.charset || 'utf-8',
-    body: '',
-    forms: [],
-  });
+  showSearchCaptureForm({ method: 'GET', url: '', charset: message.charset || 'utf-8', body: '', forms: [] });
 }

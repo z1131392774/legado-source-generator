@@ -9,16 +9,24 @@ let mockRenderSummaryCalled = false;
 
 global.state = {
   activeRuleType: 'search',
-  rules: {
-    search: { currentStep: 0, fields: {}, fieldStates: {}, bookListSelector: null },
-  },
+  rules: { search: { currentStep: 0, fields: {}, fieldStates: {}, bookListSelector: null } }
 };
 
-global.saveState = () => { mockSaveCalled = true; };
-global.updateStepIndicator = () => { mockUpdateStepCalled = true; };
-global.renderFields = () => { mockRenderFieldsCalled = true; };
-global.updateNavButtons = () => { mockUpdateNavCalled = true; };
-global.renderFieldStatusSummary = () => { mockRenderSummaryCalled = true; };
+global.saveState = () => {
+  mockSaveCalled = true;
+};
+global.updateStepIndicator = () => {
+  mockUpdateStepCalled = true;
+};
+global.renderFields = () => {
+  mockRenderFieldsCalled = true;
+};
+global.updateNavButtons = () => {
+  mockUpdateNavCalled = true;
+};
+global.renderFieldStatusSummary = () => {
+  mockRenderSummaryCalled = true;
+};
 global.getRuleState = () => global.state.rules[global.state.activeRuleType];
 
 // 被测函数（与 popup.js 中逻辑一致）

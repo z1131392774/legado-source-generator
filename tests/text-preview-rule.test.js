@@ -34,19 +34,13 @@ function parseTextRule(input) {
 
   let text = match[1].trim();
   const indexMatch = text.match(/^(.*)\.(-?\d+)$/);
-  const index = indexMatch && indexMatch[1].trim()
-    ? parseInt(indexMatch[2], 10)
-    : null;
+  const index = indexMatch && indexMatch[1].trim() ? parseInt(indexMatch[2], 10) : null;
   if (index !== null) {
     text = indexMatch[1].trim();
   }
 
   const attrMatch = raw.match(/@([^@\s]+)$/);
-  return {
-    text,
-    attr: attrMatch ? attrMatch[1] : '',
-    index,
-  };
+  return { text, attr: attrMatch ? attrMatch[1] : '', index };
 }
 
 function buildTextRule(parsed, index) {
@@ -118,11 +112,7 @@ assert.equal(
   'text rule with href suffix is recognized'
 );
 
-assert.equal(
-  resolveTextPreviewRule('text.@href'),
-  '',
-  'empty text rule is ignored'
-);
+assert.equal(resolveTextPreviewRule('text.@href'), '', 'empty text rule is ignored');
 
 assert.deepEqual(
   buildPreviewMessage('text.下一页@href', 'text.下一页'),

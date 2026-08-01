@@ -3,7 +3,7 @@ const {
   buildBatchReplaceRegex,
   replaceUrlByRegex,
   applyBatchUrlReplace,
-  applyCategoryPagingByTemplate,
+  applyCategoryPagingByTemplate
 } = require('../src/popup/batch-url-utils.js');
 
 (function testBuildRegexFlags() {
@@ -21,13 +21,13 @@ const {
   const items = [
     { title: 'A', url: '/sort/xuanhuan/2.html' },
     { title: '分隔', url: '', isSeparator: true },
-    { title: 'B', url: '/sort/xuanhuan/3.html' },
+    { title: 'B', url: '/sort/xuanhuan/3.html' }
   ];
   const result = applyBatchUrlReplace(items, [0, 1, 2], {
     pattern: 'xuanhuan',
     replacement: '分类',
     global: true,
-    ignoreCase: false,
+    ignoreCase: false
   });
 
   assert.equal(result.updatedCount, 2);
@@ -40,7 +40,7 @@ const {
   const output = applyCategoryPagingByTemplate('/sort/xuanhuan/', {
     categoryPattern: '/sort/分类/',
     pagedUrlTemplate: '/sort/分类/index_页码.html',
-    firstPageDiff: 'index_页码.html',
+    firstPageDiff: 'index_页码.html'
   });
   assert.equal(output, '/sort/xuanhuan/<,index_{{page}}.html>');
 })();
@@ -49,7 +49,7 @@ const {
   const output = applyCategoryPagingByTemplate('/sort/xuanhuan/{{page}}.html', {
     categoryPattern: '/sort/分类/',
     pagedUrlTemplate: '/sort/分类/页码.html',
-    firstPageDiff: 'index_页码.html',
+    firstPageDiff: 'index_页码.html'
   });
   assert.equal(output, '/sort/xuanhuan/{{page}}.html');
 })();

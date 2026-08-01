@@ -34,9 +34,9 @@ function filterPreviewsByIndex(previews, index, isListField, listRange) {
 
       if (isGrouped) {
         const placeholder = { text: '', html: '' };
-        return groups.map(group => {
+        return groups.map((group) => {
           const i = resolveArrayIndex(itemIndex, group.length);
-          return (i >= 0 && i < group.length) ? group[i] : placeholder;
+          return i >= 0 && i < group.length ? group[i] : placeholder;
         });
       }
       const i = resolveArrayIndex(itemIndex, groups.length);
@@ -73,15 +73,11 @@ function assertDeepEqual(actual, expected, msg) {
   }
 }
 
-const flat = [
-  { text: 'Chapter 1' },
-  { text: 'Chapter 2' },
-  { text: 'Chapter 3' },
-];
+const flat = [{ text: 'Chapter 1' }, { text: 'Chapter 2' }, { text: 'Chapter 3' }];
 
 const grouped = [
   [{ text: 'Book A - first' }, { text: 'Book A - latest' }],
-  [{ text: 'Book B - first' }, { text: 'Book B - latest' }],
+  [{ text: 'Book B - first' }, { text: 'Book B - latest' }]
 ];
 
 console.log('\nPreview single index tests');
@@ -98,17 +94,9 @@ assertDeepEqual(
   'single=-1 selects last item in each preview group'
 );
 
-assertDeepEqual(
-  filterPreviewsByIndex(flat, { single: '0' }, false),
-  flat,
-  'single=0 keeps all previews'
-);
+assertDeepEqual(filterPreviewsByIndex(flat, { single: '0' }, false), flat, 'single=0 keeps all previews');
 
-assertDeepEqual(
-  filterPreviewsByIndex(flat, { single: 'abc' }, false),
-  flat,
-  'invalid single index keeps all previews'
-);
+assertDeepEqual(filterPreviewsByIndex(flat, { single: 'abc' }, false), flat, 'invalid single index keeps all previews');
 
 assertDeepEqual(
   filterPreviewsByIndex(flat, { single: '-4' }, false),

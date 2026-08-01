@@ -2,13 +2,13 @@
 
 /* Hover highlight - element under cursor */
 .picker-hover {
-  outline: 2px solid #4CAF50 !important;
+  outline: 2px solid #4caf50 !important;
   outline-offset: 2px !important;
 }
 
 /* Selected highlight - clicked element */
 .picker-selected {
-  outline: 2px solid #2196F3 !important;
+  outline: 2px solid #2196f3 !important;
   outline-offset: 2px !important;
 }
 
@@ -127,7 +127,7 @@
   border-radius: 6px;
   font-size: 13px;
   max-width: 320px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   color: #fff;
   line-height: 1.4;
   animation: toast-in 0.3s ease;

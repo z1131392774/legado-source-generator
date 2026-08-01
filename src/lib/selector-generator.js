@@ -3,61 +3,141 @@
  * Generates CSS selectors for DOM elements
  */
 
-const DEFAULT_BLACKLIST = [
-  'css-*',
-  'sc-*',
-  'emotion-*',
-  'makeStyles-*',
-  'Mui*',
-  'picker-*',
-  /^[0-9]+$/,
-];
+const DEFAULT_BLACKLIST = ['css-*', 'sc-*', 'emotion-*', 'makeStyles-*', 'Mui*', 'picker-*', /^[0-9]+$/];
 
 const DEFAULT_PRIORITY = ['id', 'class', 'tagClass'];
 
 // Common utility CSS class prefixes that are too generic to be useful
 const UTILITY_PREFIXES = [
-  'flex', 'grid', 'block', 'inline', 'hidden', 'visible', 'overflow',
-  'relative', 'absolute', 'fixed', 'sticky', 'static',
-  'w-', 'h-', 'min-w', 'min-h', 'max-w', 'max-h',
-  'p-', 'px-', 'py-', 'pt-', 'pb-', 'pl-', 'pr-',
-  'm-', 'mx-', 'my-', 'mt-', 'mb-', 'ml-', 'mr-',
-  'text-', 'font-', 'leading-', 'tracking-', 'whitespace',
-  'bg-', 'border', 'rounded', 'shadow', 'ring',
-  'hover\\:', 'focus\\:', 'active\\:', 'disabled\\:', 'group',
-  'items-', 'justify-', 'content-', 'self-', 'place-',
-  'gap-', 'space-', 'order-', 'col-', 'row-',
-  'z-', 'top-', 'bottom-', 'left-', 'right-',
-  'cursor-', 'select-', 'pointer-events', 'resize',
-  'transition', 'duration-', 'delay-', 'ease-',
-  'transform', 'scale-', 'rotate-', 'translate-',
-  'opacity-', 'mix-blend', 'filter', 'backdrop',
-  'sr-only', 'not-sr-only',
-  'truncate', 'overflow-', 'scrollbar',
-  'appearance-', 'outline',
-  'antialiased', 'subpixel',
-  'table-', 'caption-', 'border-',
-  'list-', 'align-', 'valign',
-  'box-', 'clear-', 'float-',
-  'object-', 'fit-',
-  'isolate', 'isolation',
-  'inset-', 'start-', 'end-',
-  'basis-', 'grow', 'shrink',
-  'aspect-', 'container',
-  'divide-', 'sort-',
-  'line-clamp', 'break-',
-  'decoration-', 'underline', 'no-underline',
-  'caret-', 'accent-',
-  'scroll-', 'snap-',
-  'touch-', 'overscroll-',
+  'flex',
+  'grid',
+  'block',
+  'inline',
+  'hidden',
+  'visible',
+  'overflow',
+  'relative',
+  'absolute',
+  'fixed',
+  'sticky',
+  'static',
+  'w-',
+  'h-',
+  'min-w',
+  'min-h',
+  'max-w',
+  'max-h',
+  'p-',
+  'px-',
+  'py-',
+  'pt-',
+  'pb-',
+  'pl-',
+  'pr-',
+  'm-',
+  'mx-',
+  'my-',
+  'mt-',
+  'mb-',
+  'ml-',
+  'mr-',
+  'text-',
+  'font-',
+  'leading-',
+  'tracking-',
+  'whitespace',
+  'bg-',
+  'border',
+  'rounded',
+  'shadow',
+  'ring',
+  'hover\\:',
+  'focus\\:',
+  'active\\:',
+  'disabled\\:',
+  'group',
+  'items-',
+  'justify-',
+  'content-',
+  'self-',
+  'place-',
+  'gap-',
+  'space-',
+  'order-',
+  'col-',
+  'row-',
+  'z-',
+  'top-',
+  'bottom-',
+  'left-',
+  'right-',
+  'cursor-',
+  'select-',
+  'pointer-events',
+  'resize',
+  'transition',
+  'duration-',
+  'delay-',
+  'ease-',
+  'transform',
+  'scale-',
+  'rotate-',
+  'translate-',
+  'opacity-',
+  'mix-blend',
+  'filter',
+  'backdrop',
+  'sr-only',
+  'not-sr-only',
+  'truncate',
+  'overflow-',
+  'scrollbar',
+  'appearance-',
+  'outline',
+  'antialiased',
+  'subpixel',
+  'table-',
+  'caption-',
+  'border-',
+  'list-',
+  'align-',
+  'valign',
+  'box-',
+  'clear-',
+  'float-',
+  'object-',
+  'fit-',
+  'isolate',
+  'isolation',
+  'inset-',
+  'start-',
+  'end-',
+  'basis-',
+  'grow',
+  'shrink',
+  'aspect-',
+  'container',
+  'divide-',
+  'sort-',
+  'line-clamp',
+  'break-',
+  'decoration-',
+  'underline',
+  'no-underline',
+  'caret-',
+  'accent-',
+  'scroll-',
+  'snap-',
+  'touch-',
+  'overscroll-'
 ];
 
 function isUtilityClass(cls) {
-  return UTILITY_PREFIXES.some(prefix => cls.startsWith(prefix));
+  return UTILITY_PREFIXES.some((prefix) => cls.startsWith(prefix));
 }
 
 function isBlacklisted(className, blacklist) {
-  return blacklist.some(pattern => {
+  return blacklist.some((pattern) => {
     if (typeof pattern === 'string') {
       if (pattern.endsWith('*')) {
         return className.startsWith(pattern.slice(0, -1));
@@ -76,7 +156,7 @@ function getValidClasses(element, blacklist) {
   if (!className || typeof className !== 'string') {
     return [];
   }
-  const classes = className.split(/\s+/).filter(cls => cls && !isBlacklisted(cls, blacklist));
+  const classes = className.split(/\s+/).filter((cls) => cls && !isBlacklisted(cls, blacklist));
   // Return semantic classes first, then utility classes
   return classes.sort((a, b) => {
     const aIsUtil = isUtilityClass(a);
@@ -199,7 +279,7 @@ function getTagPath(element, root) {
 }
 
 function buildTagPathSelector(path) {
-  return path.map(p => p.tag).join(' > ');
+  return path.map((p) => p.tag).join(' > ');
 }
 
 function getCssSelector(element, options = {}) {
@@ -212,7 +292,7 @@ function getCssSelector(element, options = {}) {
     rootTag: (options.root || document.body)?.tagName,
     rootClass: (options.root || document.body)?.className,
     rootId: (options.root || document.body)?.id,
-    preferReusable: options.preferReusable,
+    preferReusable: options.preferReusable
   });
 
   if (!element || !(element instanceof Element)) {
@@ -270,7 +350,7 @@ function getCssSelector(element, options = {}) {
   const path = getTagPath(element, root);
   const tagPathResult = buildTagPathSelector(path);
   // [DEBUG] Log tag path result
-  console.log('[SelectorGen:DEBUG] tag path:', { path: path.map(p => p.tag), selector: tagPathResult });
+  console.log('[SelectorGen:DEBUG] tag path:', { path: path.map((p) => p.tag), selector: tagPathResult });
   return tagPathResult;
 }
 
@@ -278,9 +358,15 @@ function getAnchoredSelector(element, root, blacklist) {
   let anchor = null;
   let current = element.parentElement;
   while (current && current !== document.body && current !== root.parentElement) {
-    if (current.id) { anchor = current; break; }
+    if (current.id) {
+      anchor = current;
+      break;
+    }
     const classes = getValidClasses(current, blacklist);
-    if (classes.length > 0) { anchor = current; break; }
+    if (classes.length > 0) {
+      anchor = current;
+      break;
+    }
     current = current.parentElement;
   }
 
@@ -292,7 +378,7 @@ function getAnchoredSelector(element, root, blacklist) {
     anchorId: anchor?.id,
     anchorIsRoot: anchor === root,
     rootTag: root?.tagName,
-    rootClass: root?.className,
+    rootClass: root?.className
   });
 
   if (!anchor) return null;
@@ -309,10 +395,10 @@ function getAnchoredSelector(element, root, blacklist) {
   const anchorTag = anchor.tagName.toLowerCase();
   const anchorId = anchor.id ? `#${anchor.id}` : '';
   const anchorClasses = getValidClasses(anchor, blacklist);
-  const anchorClassStr = anchorClasses.map(c => `.${c.replace(/[^\w-]/g, '\\$&')}`).join('');
+  const anchorClassStr = anchorClasses.map((c) => `.${c.replace(/[^\w-]/g, '\\$&')}`).join('');
   const anchorSelector = `${anchorTag}${anchorId}${anchorClassStr}`;
 
-  const childPath = path.map(p => p.tag).join(' > ');
+  const childPath = path.map((p) => p.tag).join(' > ');
 
   const fullSelector = childPath ? `${anchorSelector} > ${childPath}` : anchorSelector;
 
@@ -321,22 +407,28 @@ function getAnchoredSelector(element, root, blacklist) {
   let docQsaResult = -1;
   try {
     rootQsaResult = root.querySelectorAll(fullSelector).length;
-  } catch (e) { rootQsaResult = -2; }
+  } catch (e) {
+    rootQsaResult = -2;
+  }
   try {
     docQsaResult = document.querySelectorAll(fullSelector).length;
-  } catch (e) { docQsaResult = -2; }
+  } catch (e) {
+    docQsaResult = -2;
+  }
   console.log('[SelectorGen:DEBUG] getAnchoredSelector validation:', {
     fullSelector,
     rootQsaResult,
     docQsaResult,
-    anchorIsRoot: anchor === root,
+    anchorIsRoot: anchor === root
   });
 
   try {
     if (root.querySelectorAll(fullSelector).length > 0) {
       return fullSelector;
     }
-  } catch (e) { /* skip */ }
+  } catch (e) {
+    /* skip */
+  }
   return null;
 }
 
@@ -353,19 +445,21 @@ function getIntersectionSelector(el1, el2, options = {}) {
   // Fallback: original logic using the clicked elements directly
   const classes1 = getValidClasses(el1, blacklist);
   const classes2 = getValidClasses(el2, blacklist);
-  const commonClasses = classes1.filter(cls => classes2.includes(cls));
+  const commonClasses = classes1.filter((cls) => classes2.includes(cls));
   const tagMatches = el1.tagName.toLowerCase() === el2.tagName.toLowerCase();
   const tagName = tagMatches ? el1.tagName.toLowerCase() : '';
 
   // Strategy 1: Same tag with common classes
   if (tagMatches && commonClasses.length > 0) {
-    const safeClasses = commonClasses.map(cls => cls.replace(/[^\w-]/g, '\\$&'));
+    const safeClasses = commonClasses.map((cls) => cls.replace(/[^\w-]/g, '\\$&'));
     const selector = `${tagName}.${safeClasses.join('.')}`;
     try {
       if (document.querySelectorAll(selector).length > 0) {
         return selector;
       }
-    } catch (e) { /* skip */ }
+    } catch (e) {
+      /* skip */
+    }
   }
 
   // Strategy 2: Same tag via common parent (e.g. ul > li)
@@ -377,7 +471,12 @@ function getIntersectionSelector(el1, el2, options = {}) {
       const parentClass = parent1.id
         ? `#${parent1.id}`
         : parent1.className
-          ? `.${parent1.className.trim().split(/\s+/).filter(c => !isBlacklisted(c, blacklist))[0]}`
+          ? `.${
+              parent1.className
+                .trim()
+                .split(/\s+/)
+                .filter((c) => !isBlacklisted(c, blacklist))[0]
+            }`
           : '';
       const baseSelector = `${parentTagName}${parentClass} > ${tagName}`;
 
@@ -392,7 +491,9 @@ function getIntersectionSelector(el1, el2, options = {}) {
             bestSelector = selector;
             bestCount = count;
           }
-        } catch (e) { /* skip */ }
+        } catch (e) {
+          /* skip */
+        }
       };
 
       trySelector(baseSelector);
@@ -402,9 +503,12 @@ function getIntersectionSelector(el1, el2, options = {}) {
         const ancTag = ancestor.tagName.toLowerCase();
         const ancId = ancestor.id ? `#${ancestor.id}` : '';
         const ancClasses = ancestor.className
-          ? ancestor.className.trim().split(/\s+/)
-              .filter(c => !isBlacklisted(c, blacklist))
-              .map(c => `.${c.replace(/[^\w-]/g, '\\$&')}`).join('')
+          ? ancestor.className
+              .trim()
+              .split(/\s+/)
+              .filter((c) => !isBlacklisted(c, blacklist))
+              .map((c) => `.${c.replace(/[^\w-]/g, '\\$&')}`)
+              .join('')
           : '';
         trySelector(`${ancTag}${ancId}${ancClasses} ${baseSelector}`);
         ancestor = ancestor.parentElement;
@@ -420,7 +524,9 @@ function getIntersectionSelector(el1, el2, options = {}) {
       if (document.querySelectorAll(tagName).length > 0) {
         return tagName;
       }
-    } catch (e) { /* skip */ }
+    } catch (e) {
+      /* skip */
+    }
   }
 
   return null;
@@ -479,10 +585,9 @@ function buildFullPathListSelector(el1, el2, blacklist) {
 
   const classes1 = getValidClasses(el1, blacklist);
   const classes2 = getValidClasses(el2, blacklist);
-  const commonClasses = classes1.filter(cls => classes2.includes(cls));
-  const itemClassStr = commonClasses.length > 0
-    ? commonClasses.map(c => `.${c.replace(/[^\w-]/g, '\\$&')}`).join('')
-    : '';
+  const commonClasses = classes1.filter((cls) => classes2.includes(cls));
+  const itemClassStr =
+    commonClasses.length > 0 ? commonClasses.map((c) => `.${c.replace(/[^\w-]/g, '\\$&')}`).join('') : '';
   const itemSelector = `${tag1}${itemClassStr}`;
 
   const parentPath = buildAncestorPath(parent, blacklist);
@@ -493,7 +598,9 @@ function buildFullPathListSelector(el1, el2, blacklist) {
     if (matches.length > 1 && matches.includes(el1) && matches.includes(el2)) {
       return fullSelector;
     }
-  } catch (e) { /* skip */ }
+  } catch (e) {
+    /* skip */
+  }
 
   return null;
 }
@@ -508,7 +615,7 @@ function buildAncestorPath(node, blacklist) {
       parts.unshift(`${tag}#${current.id.replace(/[^\w-]/g, '\\$&')}`);
     } else {
       const classes = getValidClasses(current, blacklist).slice(0, 2);
-      const classStr = classes.map(c => `.${c.replace(/[^\w-]/g, '\\$&')}`).join('');
+      const classStr = classes.map((c) => `.${c.replace(/[^\w-]/g, '\\$&')}`).join('');
       parts.unshift(`${tag}${classStr}`);
     }
     current = current.parentElement;

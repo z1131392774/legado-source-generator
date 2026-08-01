@@ -4,12 +4,7 @@ const chromeSelectorGen = require('../src/lib/selector-generator.js');
 const firefoxSelectorGen = require('../src-firefox/lib/selector-generator.js');
 
 function createNode(tagName, options = {}) {
-  return {
-    tagName,
-    id: options.id || '',
-    className: options.className || '',
-    parentElement: options.parent || null,
-  };
+  return { tagName, id: options.id || '', className: options.className || '', parentElement: options.parent || null };
 }
 
 function withMockDocument(queryMap, fn) {
@@ -23,7 +18,7 @@ function withMockDocument(queryMap, fn) {
     documentElement: html,
     querySelectorAll(selector) {
       return queryMap[selector] || [];
-    },
+    }
   };
 
   try {

@@ -7,10 +7,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const popupSource = fs.readFileSync(
-  path.resolve(__dirname, '..', 'src/popup/popup.js'),
-  'utf8'
-);
+const popupSource = fs.readFileSync(path.resolve(__dirname, '..', 'src/popup/popup.js'), 'utf8');
 
 function extractFunctionSource(source, name) {
   const start = source.indexOf(`function ${name}(`);
@@ -31,11 +28,7 @@ function extractFunctionSource(source, name) {
 
 const resetSource = extractFunctionSource(popupSource, 'handleReset');
 
-assert.match(
-  popupSource,
-  /function getResetPreservedDebugState\(\)/,
-  'reset has a helper for preserving debug state'
-);
+assert.match(popupSource, /function getResetPreservedDebugState\(\)/, 'reset has a helper for preserving debug state');
 
 assert.match(
   resetSource,

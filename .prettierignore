@@ -1,0 +1,15 @@
+# 二进制与密钥
+src.crx
+src.pem
+
+# 构建产物
+web-ext-artifacts/
+
+# 元数据与文档（格式化范围由 scripts/format.sh 显式指定）
+.git
+.trellis
+.github
+docs/
+AGENTS.md
+README.md
+LICENSE

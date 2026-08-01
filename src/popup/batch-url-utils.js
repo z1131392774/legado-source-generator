@@ -1,4 +1,4 @@
-(function(globalScope) {
+(function (globalScope) {
   function buildBatchReplaceRegex(pattern, options = {}) {
     const source = String(pattern || '');
     if (!source) {
@@ -17,10 +17,7 @@
   }
 
   function applyBatchUrlReplace(items, indexes, config = {}) {
-    const result = {
-      updatedCount: 0,
-      totalCount: 0,
-    };
+    const result = { updatedCount: 0, totalCount: 0 };
     if (!Array.isArray(items)) return result;
     const targetIndexes = Array.isArray(indexes) ? indexes : [];
     result.totalCount = targetIndexes.length;
@@ -31,7 +28,7 @@
       const prevUrl = String(item.url || '');
       const nextUrl = replaceUrlByRegex(prevUrl, config.pattern, config.replacement, {
         global: config.global !== false,
-        ignoreCase: !!config.ignoreCase,
+        ignoreCase: !!config.ignoreCase
       });
       item.url = nextUrl;
       if (nextUrl !== prevUrl) result.updatedCount += 1;
@@ -57,9 +54,7 @@
     }
 
     if (firstPageDiffRaw && !/<,.*?>/.test(nextUrl)) {
-      const firstPageDiff = firstPageDiffRaw
-        .replace(/(\+|\?)/g, '\\$1')
-        .replace(/页码/g, '{{page}}');
+      const firstPageDiff = firstPageDiffRaw.replace(/(\+|\?)/g, '\\$1').replace(/页码/g, '{{page}}');
       const firstPageRegex = new RegExp(`(${firstPageDiff})`, 'g');
       nextUrl = nextUrl.replace(firstPageRegex, '<,$1>');
     }
@@ -67,16 +62,11 @@
     return nextUrl;
   }
 
-  const exportsObj = {
-    buildBatchReplaceRegex,
-    replaceUrlByRegex,
-    applyBatchUrlReplace,
-    applyCategoryPagingByTemplate,
-  };
+  const exportsObj = { buildBatchReplaceRegex, replaceUrlByRegex, applyBatchUrlReplace, applyCategoryPagingByTemplate };
 
   globalScope.BatchUrlUtils = exportsObj;
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = exportsObj;
   }
-}(typeof globalThis !== 'undefined' ? globalThis : window));
+})(typeof globalThis !== 'undefined' ? globalThis : window);

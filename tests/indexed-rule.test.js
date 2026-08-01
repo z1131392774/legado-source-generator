@@ -48,8 +48,8 @@ function buildNativeIndexRule(baseSelector, fieldKey, fieldData, isListField) {
       return baseSelector;
     }
 
-    const nativeStart = (start > 1) ? start - 1 : '';
-    const nativeEnd = (end > 0) ? end - 1 : (end < 0 ? end : '');
+    const nativeStart = start > 1 ? start - 1 : '';
+    const nativeEnd = end > 0 ? end - 1 : end < 0 ? end : '';
 
     if (nativeStart === '' && nativeEnd === '') return baseSelector;
     if (nativeStart === '' && nativeEnd !== '') return `${baseSelector}[:${nativeEnd}]`;
@@ -97,7 +97,8 @@ function buildJsIndexRule(baseSelector, fieldKey, fieldData, isListField) {
 
     const startExpr = startVal > 1 ? startVal - 1 : 0;
     if (startVal > 1 || endVal > 0 || endVal < -1) {
-      return buildJsRule(`        var doc = org.jsoup.Jsoup.parse(result);
+      return buildJsRule(
+        `        var doc = org.jsoup.Jsoup.parse(result);
         var list = doc.select("${baseSelector}");
         var start = ${startExpr};
         var end = ${endExpr};
@@ -105,12 +106,17 @@ function buildJsIndexRule(baseSelector, fieldKey, fieldData, isListField) {
         for (var i = start; i < end; i++) {
           result.add(list.get(i));
         }
-        return result;`, true);
+        return result;`,
+        true
+      );
     }
 
-    return buildJsRule(`        var doc = org.jsoup.Jsoup.parse(result);
+    return buildJsRule(
+      `        var doc = org.jsoup.Jsoup.parse(result);
         var list = doc.select("${baseSelector}");
-        return list;`, true);
+        return list;`,
+      true
+    );
   }
 
   const selectedTag = fieldData.tagName || '';
@@ -239,11 +245,7 @@ const jsListRule = buildIndexedRule(
   { useJsIndex: true, listIndex: { start: '2', end: '-2' } },
   true
 );
-assertIncludes(
-  jsListRule,
-  'var start = 1;',
-  'JS list start index converts from 1-based UI input'
-);
+assertIncludes(jsListRule, 'var start = 1;', 'JS list start index converts from 1-based UI input');
 assertIncludes(
   jsListRule,
   'var end = list.size() + (-2) + 1;',

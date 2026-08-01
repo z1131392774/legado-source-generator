@@ -3,15 +3,9 @@
   "name": "Legado Source Generator",
   "version": "1.4.0",
   "description": "Generate Legado book source rules from web pages",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "<all_urls>"
-  ],
+  "permissions": ["activeTab", "storage", "<all_urls>"],
   "content_security_policy": "script-src 'self'; object-src 'self'; connect-src * ws: wss:",
-  "browser_action": {
-    "default_title": "Legado Source Generator"
-  },
+  "browser_action": { "default_title": "Legado Source Generator" },
   "sidebar_action": {
     "default_title": "Legado Source Generator",
     "default_panel": "popup/index.html",
@@ -21,14 +15,10 @@
     "gecko": {
       "id": "legado-source-generator@z1131392774.com",
       "strict_min_version": "109.0",
-      "data_collection_permissions": {
-        "required": ["none"]
-      }
+      "data_collection_permissions": { "required": ["none"] }
     }
   },
-  "background": {
-    "scripts": ["background.js"]
-  },
+  "background": { "scripts": ["background.js"] },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

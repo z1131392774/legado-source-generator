@@ -26,8 +26,8 @@ function buildNativeIndexRule(baseSelector, fieldKey, fieldData, isListField) {
       return baseSelector;
     }
 
-    const nativeStart = (start > 1) ? start - 1 : '';
-    const nativeEnd = (end > 0) ? end - 1 : (end < 0 ? end : '');
+    const nativeStart = start > 1 ? start - 1 : '';
+    const nativeEnd = end > 0 ? end - 1 : end < 0 ? end : '';
 
     if (nativeStart === '' && nativeEnd === '') return baseSelector;
     if (nativeStart === '' && nativeEnd !== '') return `${baseSelector}[:${nativeEnd}]`;

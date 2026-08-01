@@ -1,511 +1,628 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legado 书源生成器</title>
-  <link rel="stylesheet" href="popup.css">
-</head>
-<body>
-  <div id="app">
-    <header class="header">
-      <div class="header-top">
-        <h1>Legado 书源生成器</h1>
-        <div class="header-actions">
-          <span id="quickInsertBtn" class="btn btn-icon" title="快速插入文本片段">⚡ 快速插入</span>
-          <button id="importBtn" class="btn btn-icon" title="导入 JSON 配置">📥 导入</button>
-          <button id="checkUpdateBtn" class="btn btn-icon" title="检查更新">🔄 检查更新</button>
-        </div>
-      </div>
-    </header>
-
-    <div class="rule-type-tabs" id="modeTabs"></div>
-    <div class="rule-type-tabs" id="ruleTypeTabs"></div>
-
-    <div id="searchUrlEditor" class="search-url-editor hidden">
-      <div class="list-hint">⚠️ 请在网站的搜索框内手动输入 <strong>「我的」</strong>，再点击「捕获」按钮</div>
-      <div class="search-url-row">
-        <button id="captureSearchUrlBtn" class="btn btn-action btn-capture-search" title="从当前页面捕获搜索请求">🔍 捕获</button>
-      </div>
-      <div id="searchCapturePanel" class="search-capture-panel">
-        <div id="searchCaptureListening" class="search-capture-listening hidden">
-          <div class="search-capture-spinner"></div>
-          <p>请点击网站的"搜索"按钮</p>
-          <button id="searchCaptureCancelListenBtn" class="btn btn-secondary">取消</button>
-        </div>
-        <div id="searchCaptureForm" class="search-capture-form">
-          <div class="search-field">
-            <label>请求方法</label>
-            <select id="searchMethod" class="input input--sans">
-              <option value="GET">GET</option>
-              <option value="POST">POST</option>
-            </select>
-          </div>
-          <div class="search-field">
-            <label>charset</label>
-            <input type="text" id="searchCharset" class="input" value="" placeholder="utf-8 / gbk">
-          </div>
-          <div class="search-field">
-            <label>webView <span class="search-field-hint" title="搜索不到内容时尝试选择 true，会拖慢速度，不建议无脑加上">ⓘ</span></label>
-            <select id="searchWebView" class="input input--sans">
-              <option value="false" selected>false</option>
-              <option value="true">true</option>
-            </select>
-          </div>
-          <div class="search-field" id="searchBodyField">
-            <label>请求体</label>
-            <textarea id="searchBodyTemplate" class="input" rows="1"></textarea>
-          </div>
-          <div class="search-field">
-            <div class="search-url-label-row">
-              <label>搜索 URL</label>
-              <button id="insertPagePlaceholderBtn" class="btn btn-action btn-sm" title="插入 {{page}} 占位符">{{page}}</button>
-            </div>
-            <textarea id="searchUrlTemplate" class="input" rows="1" placeholder="捕获后自动填充"></textarea>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Legado 书源生成器</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div class="header-top">
+          <h1>Legado 书源生成器</h1>
+          <div class="header-actions">
+            <span id="quickInsertBtn" class="btn btn-icon" title="快速插入文本片段">⚡ 快速插入</span>
+            <button id="importBtn" class="btn btn-icon" title="导入 JSON 配置">📥 导入</button>
+            <button id="checkUpdateBtn" class="btn btn-icon" title="检查更新">🔄 检查更新</button>
           </div>
         </div>
-      </div>
-    </div>
+      </header>
 
-    <div id="exploreUrlEditor" class="explore-editor hidden">
-      <div class="editor-toolbar">
-        <div class="toolbar-left">
-          <div class="toolbar-row toolbar-primary">
-            <button id="exploreCollectBtn" class="btn btn-primary">从页面收集元素</button>
-            <button id="exploreAddItemBtn" class="btn btn-action">手动添加</button>
-            <button id="exploreAddSeparatorBtn" class="btn btn-action">插入分隔</button>
-            <button id="exploreExportBtn" class="btn btn-action">导出 JSON</button>
+      <div class="rule-type-tabs" id="modeTabs"></div>
+      <div class="rule-type-tabs" id="ruleTypeTabs"></div>
+
+      <div id="searchUrlEditor" class="search-url-editor hidden">
+        <div class="list-hint">⚠️ 请在网站的搜索框内手动输入 <strong>「我的」</strong>，再点击「捕获」按钮</div>
+        <div class="search-url-row">
+          <button id="captureSearchUrlBtn" class="btn btn-action btn-capture-search" title="从当前页面捕获搜索请求">
+            🔍 捕获
+          </button>
+        </div>
+        <div id="searchCapturePanel" class="search-capture-panel">
+          <div id="searchCaptureListening" class="search-capture-listening hidden">
+            <div class="search-capture-spinner"></div>
+            <p>请点击网站的"搜索"按钮</p>
+            <button id="searchCaptureCancelListenBtn" class="btn btn-secondary">取消</button>
           </div>
-          <div class="toolbar-row toolbar-batch">
-            <label class="batch-check-toggle"><input id="batchSelectToggle" type="checkbox">开启复选</label>
-            <button id="batchSelectAllBtn" class="btn btn-action">全选</button>
-            <button id="batchInvertBtn" class="btn btn-action">反选</button>
-            <button id="batchLayoutBtn" class="btn btn-action">批量改 layout</button>
-            <button id="batchUrlBtn" class="btn btn-action">批量改 URL</button>
-            <button id="exploreClearBtn" class="btn btn-action btn-clear">清空</button>
-          </div>
-          <div class="toolbar-row toolbar-templates">
-            <button id="setDefaultTemplateBtn" class="btn btn-action">模板管理</button>
-            <button id="applyStyleBtn" class="btn btn-action">应用样式</button>
-          </div>
-        </div>
-      </div>
-      <div id="batchActionNotice" class="batch-action-notice hidden"></div>
-      <div class="editor-layout">
-        <div class="editor-cards" id="exploreCards"></div>
-        <div class="editor-props" id="exploreProps">
-          <div class="props-placeholder">选择卡片编辑样式</div>
-        </div>
-      </div>
-      <div id="exploreJsonModal" class="modal hidden">
-        <div class="modal-content">
-          <h3>发现页 URL JSON</h3>
-          <textarea id="exploreJsonOutput" class="input input--json" readonly></textarea>
-          <div class="modal-actions">
-            <button id="exploreCopyBtn" class="btn btn-primary">复制到剪贴板</button>
-            <button id="exploreCloseModalBtn" class="btn btn-secondary">关闭</button>
-          </div>
-        </div>
-      </div>
-      <div class="explore-preview-box">
-        <div class="explore-preview-header">
-          <label>发现页 URL 预览</label>
-          <div class="explore-format-toggle">
-            <button class="format-btn active" data-format="2">样式二</button>
-            <button class="format-btn" data-format="1">样式一</button>
-          </div>
-        </div>
-        <textarea id="exploreUrlPreview" class="input" rows="1" readonly></textarea>
-        <div id="exploreCollectionIndicator" class="explore-collection-indicator hidden">
-          <div class="indicator-step" id="exploreIndicatorStep">-</div>
-          <div class="indicator-element" id="exploreIndicatorElement">-</div>
-          <div class="indicator-shortcuts">
-            <kbd>Enter</kbd> 完成收集
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="advancedPanel" class="advanced-panel hidden">
-      <div class="advanced-section">
-        <div class="advanced-section-head" style="justify-content:flex-start;gap:8px">
-          <label class="advanced-label">源类型</label>
-          <select id="bookSourceTypeSelect" class="input input--sans" style="width:80px">
-            <option value="0">文本</option>
-            <option value="1">音频</option>
-            <option value="2">图片</option>
-            <option value="3">文件</option>
-            <option value="4">视频</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="advanced-section">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <label class="advanced-label">源名称</label>
-          <button id="autoFillBtn" class="btn btn-action" title="自动填充当前页面信息">自动填充</button>
-        </div>
-        <textarea id="bookSourceName" placeholder="源名称" class="input input--sans" rows="1"></textarea>
-      </div>
-
-      <div class="advanced-section">
-        <label class="advanced-label">源URL</label>
-        <textarea id="bookSourceUrl" placeholder="源URL" class="input input--sans" rows="1"></textarea>
-      </div>
-
-      <div class="advanced-section">
-        <label class="advanced-label">书籍URL正则</label>
-        <textarea id="bookUrlPattern" placeholder="书籍URL正则表达式" class="input input--sans" rows="1"></textarea>
-      </div>
-
-      <div class="advanced-section">
-        <label class="advanced-label">源注释</label>
-        <textarea id="bookSourceComment" placeholder="源注释" class="input input--sans" rows="1"></textarea>
-      </div>
-
-      <div class="advanced-section">
-        <div class="advanced-section-head">
-          <label class="advanced-label">请求头</label>
-          <div class="advanced-actions">
-            <button id="addUaHeaderBtn" class="btn btn-action btn-sm" type="button">写 电脑UA</button>
-            <button id="addMobileUaHeaderBtn" class="btn btn-action btn-sm" type="button">写 手机UA</button>
-            <button id="addRefererHeaderBtn" class="btn btn-action btn-sm" type="button">写 Referer</button>
-            <button id="addHeaderItemBtn" class="btn btn-action btn-sm" type="button">添加请求头</button>
-          </div>
-        </div>
-        <div id="advancedHeadersList" class="advanced-list"></div>
-      </div>
-
-      <div class="advanced-section">
-        <div class="advanced-section-head">
-          <label class="advanced-label">登录检查JS</label>
-          <button id="autoFillCfBtn" class="btn btn-action btn-sm" type="button">过CF盾</button>
-        </div>
-        <textarea id="loginCheckJs" class="input" rows="1" placeholder="登录检查JS脚本"></textarea>
-      </div>
-    </div>
-
-    <div class="step-indicator">
-      <div id="fieldStatusSummary" class="field-status-summary"></div>
-    </div>
-
-    <main class="form-area">
-      <div id="fieldContainer"></div>
-      <div id="pickerStatusContainer" class="picker-status-container hidden">
-        <div class="picker-status-step" id="pickerStatusStep">-</div>
-        <div class="picker-status-element" id="pickerStatusElement">-</div>
-        <div class="picker-status-shortcuts">
-          <kbd>Esc</kbd> 取消 &nbsp; <kbd>↑↓←→</kbd> 导航 &nbsp; <kbd>Enter</kbd> 确认
-        </div>
-      </div>
-      <div id="exploreCollectionStatus" class="explore-collection-status hidden">
-        <div class="status-text">
-          <span class="status-icon">●</span>
-          <span id="exploreStatusMessage">收集中...</span>
-        </div>
-        <div class="status-count">已收集: <span id="exploreCountDisplay">0</span> 项</div>
-        <button id="exploreStopCollectBtn" class="btn btn-action btn-stop-collect">停止收集</button>
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="nav-buttons" id="navButtons">
-        <button id="prevBtn" class="btn btn-secondary" disabled>上一步</button>
-        <button id="nextBtn" class="btn btn-primary">下一步</button>
-      </div>
-      <button id="exportBtn" class="btn btn-success">导出 JSON</button>
-      <button id="resetBtn" class="btn btn-clear">重置所有</button>
-    </footer>
-
-    <div id="exportModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>导出 JSON</h3>
-        <textarea id="jsonOutput" class="input input--json" readonly></textarea>
-        <div class="modal-actions">
-          <button id="copyBtn" class="btn btn-primary">复制到剪贴板</button>
-          <button id="downloadBtn" class="btn btn-success">下载 JSON</button>
-          <button id="closeModalBtn" class="btn btn-secondary">关闭</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="updateModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>检查更新</h3>
-        <div class="update-info">
-          <p>当前版本: <strong id="currentVersion">-</strong></p>
-          <p>最新版本: <strong id="latestVersion">检查中...</strong></p>
-          <p id="updateStatus"></p>
-        </div>
-        <div class="update-links">
-          <a href="https://github.com/z1131392774/legado-source-generator" target="_blank" rel="noopener">GitHub 仓库</a>
-          <a href="https://gitee.com/z1131392774/legado-source-generator" target="_blank" rel="noopener">Gitee 仓库</a>
-        </div>
-        <div class="modal-actions">
-          <button id="closeUpdateBtn" class="btn btn-primary">关闭</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="batchLayoutModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>批量修改 layout 属性</h3>
-        <div class="batch-layout-grid">
-          <label><input type="checkbox" id="batchEnableFlexGrow"> layout_flexGrow <input type="number" id="batchFlexGrow" class="input input--50" value="1" step="1"></label>
-          <label><input type="checkbox" id="batchEnableFlexShrink"> layout_flexShrink <input type="number" id="batchFlexShrink" class="input input--50" value="0" step="1"></label>
-          <label><input type="checkbox" id="batchEnableAlignSelf"> layout_alignSelf <input type="text" id="batchAlignSelf" class="input input--50" value="auto"></label>
-          <label><input type="checkbox" id="batchEnableFlexBasis"> layout_flexBasisPercent <input type="number" id="batchFlexBasisPercent" class="input input--50" value="-1" step="0.1"></label>
-          <label><input type="checkbox" id="batchEnableWrapBefore"> layout_wrapBefore <input type="checkbox" id="batchWrapBefore"></label>
-        </div>
-        <div class="modal-actions">
-          <button id="batchLayoutApplyConfirmBtn" class="btn btn-primary">应用到已选</button>
-          <button id="batchLayoutCancelBtn" class="btn btn-secondary">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="batchUrlModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>批量修改 URL</h3>
-        <div class="batch-url-tabs" id="batchUrlTabs">
-          <button id="batchUrlTabTemplate" class="batch-url-tab active" data-mode="template">模板匹配</button>
-          <button id="batchUrlTabRegex" class="batch-url-tab" data-mode="regex">正则匹配</button>
-        </div>
-        <div id="batchUrlPanelTemplate" class="batch-url-panel">
-          <div class="batch-url-help">
-            <div class="title">模板匹配说明与示例</div>
-            <div>规则 1：如果链接里只有“页码数字”变化，`第一页差异` 留空。</div>
-            <div>规则 2：如果第一页没有页码变量（或结构不同），`第一页差异` 填“分页链接里多出来的那一段（含页码）”。</div>
-            <div>分类匹配模板怎么填：以“第一页 URL”为基准，把分类那段替换成 `分类`，其它部分保持不变。</div>
-            <div>翻页模板怎么填：以“第二页 URL”为基准，把分类那段替换成 `分类`，把页码数字替换成 `页码`。</div>
-            <div>示例 A（第一页与分页结构不同）：</div>
-            <div>第一页：`https://www.demo-site.com/fantasy/`</div>
-            <div>第二页：`https://www.demo-site.com/fantasy/index_2.html`</div>
-            <div>填写：</div>
-            <div>分类匹配模板：`https://www.demo-site.com/分类/`</div>
-            <div>翻页模板：`https://www.demo-site.com/分类/index_页码.html`</div>
-            <div>第一页差异：`index_页码.html`</div>
-            <div>示例 A-2（第一页是 index.html，分页是 index_2.html）：</div>
-            <div>第一页：`https://www.demo-site.com/fantasy/index.html`</div>
-            <div>第二页：`https://www.demo-site.com/fantasy/index_2.html`</div>
-            <div>填写：</div>
-            <div>分类匹配模板：`https://www.demo-site.com/分类/index.html`</div>
-            <div>翻页模板：`https://www.demo-site.com/分类/index_页码.html`</div>
-            <div>第一页差异：`index_页码.html`</div>
-            <div>示例 B（分类位 + 页码位都在 URL 中）：</div>
-            <div>第一页：`https://www.demo-site.com/tags-150-0.html`（150 是分类，0 是页码）</div>
-            <div>第二页：`https://www.demo-site.com/tags-150-1.html`</div>
-            <div>填写：</div>
-            <div>分类匹配模板：`https://www.demo-site.com/tags-分类-0.html`</div>
-            <div>翻页模板：`https://www.demo-site.com/tags-分类-页码.html`</div>
-            <div>第一页差异：留空</div>
-          </div>
-          <div class="batch-layout-grid template-grid batch-url-form">
-            <label><span>分类匹配模板</span><textarea id="batchCategoryPattern" class="input input--sans" rows="1" placeholder="https://www.example.com/分类/"></textarea></label>
-            <label><span>翻页模板</span><textarea id="batchPagedUrlTemplate" class="input input--sans" rows="1" placeholder="https://www.example.com/分类/页码.html"></textarea></label>
-            <label><span>第一页差异</span><textarea id="batchFirstPageDiff" class="input input--sans" rows="1" placeholder="页码.html（可选）"></textarea></label>
-          </div>
-        </div>
-        <div id="batchUrlPanelRegex" class="batch-url-panel hidden">
-          <div class="batch-layout-grid template-grid batch-url-form">
-            <label><span>正则表达式</span><textarea id="batchUrlPattern" class="input input--sans" rows="1" placeholder="如：/sort/xuanhuan/"></textarea></label>
-            <label><span>替换为</span><textarea id="batchUrlReplacement" class="input input--sans" rows="1" placeholder="如：/sort/分类/"></textarea></label>
-            <label><input type="checkbox" id="batchRegexGlobal" checked> 全局替换（g）</label>
-            <label><input type="checkbox" id="batchRegexIgnoreCase"> 忽略大小写（i）</label>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button id="batchUrlApplyConfirmBtn" class="btn btn-primary">应用到已选</button>
-          <button id="batchUrlCancelBtn" class="btn btn-secondary">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="styleTemplateModal" class="modal hidden">
-      <div class="modal-content">
-        <h3 id="styleTemplateModalTitle">新增样式模板</h3>
-        <input type="hidden" id="editingTemplateId">
-        <div class="batch-layout-grid template-grid">
-          <label>模板名称 <input type="text" id="templateName" class="input input--50" placeholder="如：三列紧凑"></label>
-          <label>layout_flexGrow <input type="number" id="tplFlexGrow" class="input input--50" value="1" step="1"></label>
-          <label>layout_flexShrink <input type="number" id="tplFlexShrink" class="input input--50" value="0" step="1"></label>
-          <label>layout_alignSelf <input type="text" id="tplAlignSelf" class="input input--50" value="auto"></label>
-          <label>layout_flexBasisPercent <input type="number" id="tplFlexBasisPercent" class="input input--50" value="-1" step="0.1"></label>
-          <label>layout_wrapBefore <input type="checkbox" id="tplWrapBefore"></label>
-        </div>
-        <div class="modal-actions">
-          <button id="templateSaveBtn" class="btn btn-primary">保存模板</button>
-          <button id="templateCancelBtn" class="btn btn-secondary">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="defaultTemplateModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>样式模板管理</h3>
-        <input id="templateSearchInput" class="input input--sans batch-modal-select" placeholder="搜索模板名称" />
-        <div id="templateManageList" class="template-manage-list"></div>
-        <div class="modal-actions">
-          <button id="templateManageAddBtn" class="btn btn-primary">新增模板</button>
-          <button id="defaultTemplateCancelBtn" class="btn btn-secondary">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="applyStyleModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>应用样式模板</h3>
-        <select id="applyTemplateSelect" class="input input--sans batch-modal-select"></select>
-        <div class="modal-actions">
-          <button id="applyTemplateConfirmBtn" class="btn btn-primary">应用到已选</button>
-          <button id="applyTemplateCancelBtn" class="btn btn-secondary">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="indexTutorialModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>索引教程</h3>
-        <div class="index-tutorial-content">
-          <h4>什么时候使用索引？</h4>
-          <p>当你选中一个元素后，预览区域会显示匹配到的结果。<strong>只有在单个容器内出现了多个不需要的元素，需要筛选其中一部分时才使用索引。</strong></p>
-          <p>正常情况下，预览里显示很多条，但那是从<strong>不同容器</strong>中获取到的，属于正常结果，<strong>不需要使用索引</strong>。</p>
-          <p class="index-tutorial-tip">💡 看不懂？那就先不要使用。如果抓取结果不符合预期，再回来尝试使用索引。</p>
-
-          <h4>怎么使用索引？</h4>
-          <p><strong>列表字段（范围）</strong></p>
-          <ul>
-            <li>正着数从 <strong>1</strong> 开始，1 就是第一个</li>
-            <li>负着数从末尾开始，<strong>-1</strong> 是倒数第一个，<strong>-2</strong> 是倒数第二个</li>
-            <li>区间是<strong>闭区间</strong>（包含两端）</li>
-            <li>例如 <code>[2, -2]</code>：从第 2 个取到倒数第 2 个（都包含），倒数第 1 个不在范围内</li>
-          </ul>
-          <p><strong>单值字段（单个位置）</strong></p>
-          <ul>
-            <li>输入正数：取正着数第 N 个</li>
-            <li>输入负数：取倒着数第 N 个</li>
-            <li>不填或填 1：取第一个（默认）</li>
-          </ul>
-        </div>
-        <div class="modal-actions">
-          <button id="closeIndexTutorialBtn" class="btn btn-primary">关闭</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="importModal" class="modal hidden">
-      <div class="modal-content import-modal">
-        <h3>导入 JSON 配置 <button id="closeImportBtn" class="btn btn-icon import-close-btn" title="关闭">✕</button></h3>
-        <div class="import-json-input-section">
-          <label>📋 粘贴 JSON</label>
-          <textarea id="importJsonTextarea" class="input" rows="4" placeholder="在此粘贴 JSON 内容..."></textarea>
-          <div id="importJsonError" class="import-json-error hidden"></div>
-          <div class="import-or-divider">── 或 ──</div>
-          <button id="importFileBtn" class="btn btn-action">📁 选择文件</button>
-          <input type="file" id="importFileInput" accept=".json,application/json" style="display:none">
-        </div>
-        <div id="importTreeSection" class="import-tree-section hidden">
-          <div class="import-tree-header">
-            <label>选择要导入的项：</label>
-            <div class="import-tree-actions">
-              <button id="importSelectAllBtn" class="btn btn-sm btn-secondary">全选</button>
-              <button id="importInvertBtn" class="btn btn-sm btn-secondary">反选</button>
-            </div>
-          </div>
-          <div id="importTreeContainer" class="import-tree"></div>
-        </div>
-        <div id="importWarningArea" class="import-warning-area"></div>
-        <div class="modal-actions">
-          <button id="cancelImportBtn" class="btn btn-secondary">取消</button>
-          <button id="confirmImportBtn" class="btn btn-primary" disabled>确认导入</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="lazyLoadModal" class="modal hidden">
-      <div class="modal-content">
-        <div class="lazy-scroll">
-          <h3>懒加载等待模板配置</h3>
-          <div class="lazy-config">
-            <div class="lazy-row">
-              <label>元素选择器</label>
-              <input type="text" id="lazySelector" class="input input--sans" value="" placeholder="必填">
-            </div>
-            <div class="lazy-row">
-              <label>检测目标</label>
-              <select id="lazyCheckTarget" class="input input--sans">
-                <option value="html" selected>html (outerHTML)</option>
-                <option value="text">text (innerText)</option>
+          <div id="searchCaptureForm" class="search-capture-form">
+            <div class="search-field">
+              <label>请求方法</label>
+              <select id="searchMethod" class="input input--sans">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
               </select>
             </div>
-            <div class="lazy-row">
-              <label>必须匹配 <span class="lazy-hint">(正则，留空关闭)</span></label>
-              <input type="text" id="lazyExpect" class="input input--sans" placeholder="例：正文内容">
+            <div class="search-field">
+              <label>charset</label>
+              <input type="text" id="searchCharset" class="input" value="" placeholder="utf-8 / gbk" />
             </div>
-            <div class="lazy-row">
-              <label>排除匹配 <span class="lazy-hint">(正则，留空关闭)</span></label>
-              <input type="text" id="lazyReject" class="input input--sans" value="/加载中|loading|请稍候/i">
+            <div class="search-field">
+              <label
+                >webView
+                <span class="search-field-hint" title="搜索不到内容时尝试选择 true，会拖慢速度，不建议无脑加上"
+                  >ⓘ</span
+                ></label
+              >
+              <select id="searchWebView" class="input input--sans">
+                <option value="false" selected>false</option>
+                <option value="true">true</option>
+              </select>
             </div>
-            <div class="lazy-row">
-              <label>自定义就绪检测 <span class="lazy-hint">(函数体，留空关闭)</span></label>
-              <input type="text" id="lazyReadyCheck" class="input input--sans" placeholder="例：el.querySelectorAll('img[src]').length > 0">
+            <div class="search-field" id="searchBodyField">
+              <label>请求体</label>
+              <textarea id="searchBodyTemplate" class="input" rows="1"></textarea>
             </div>
-            <div class="lazy-row lazy-row--checkbox">
-              <label><input type="checkbox" id="lazyNormalize" checked> 压缩空白符 (仅 text 模式)</label>
-            </div>
-            <div class="lazy-row lazy-row--checkbox">
-              <label><input type="checkbox" id="lazyScroll" checked> 首次滚动到底部</label>
+            <div class="search-field">
+              <div class="search-url-label-row">
+                <label>搜索 URL</label>
+                <button id="insertPagePlaceholderBtn" class="btn btn-action btn-sm" title="插入 {{page}} 占位符">
+                  {{page}}
+                </button>
+              </div>
+              <textarea id="searchUrlTemplate" class="input" rows="1" placeholder="捕获后自动填充"></textarea>
             </div>
           </div>
-          <details class="lazy-tutorial">
-            <summary>使用说明</summary>
-            <div class="lazy-tutorial-content">
-              <p>此模板用于解决懒加载资源获取不到的问题。配置后生成脚本，阅读会反复执行直到正文页面就绪。</p>
-              <h4>参数说明</h4>
-              <p><strong>元素选择器</strong><br>等待出现的 CSS 选择器，例如 <code>.read-content</code>、<code>#chapter-content</code>。<br>如果正文内容字段已选择过元素，会自动填入。</p>
-              <p><strong>检测目标</strong><br><code>html</code>：检查元素的 outerHTML（默认，适合大多数场景）<br><code>text</code>：检查元素的 innerText（仅需匹配文字内容时使用）</p>
-              <p><strong>必须匹配</strong>（正则，留空关闭）<br>检测目标中必须包含的内容。成功匹配时，认为网页已就绪并返回页面 HTML。<br>留空表示不检查，直接返回。<br>例：<code>/正文/</code> — 页面包含"正文"二字时立即视为就绪。</p>
-              <p><strong>排除匹配</strong>（正则，留空关闭）<br>检测目标中不能包含的内容。匹配到则视为未就绪，继续等待。<br>默认：<code>/加载中|loading|请稍候/i</code> — 页面仍在加载时继续等待。</p>
-              <p><strong>自定义就绪检测</strong>（函数体，留空关闭）<br>填写后独占判断，正则不生效。返回 <code>true</code> 表示就绪。<br>例：<code>el.querySelectorAll('img[src]:not([src^="data:"])').length &gt; 0</code><br>等待图片全部加载完成（非 data URL）。</p>
-              <p><strong>压缩空白符</strong><br>仅 text 模式生效。将连续空白符压缩为单个空格后再匹配。</p>
-              <p><strong>首次滚动到底部</strong><br>执行时先滚动到页面底部触发懒加载，下次执行再检查内容。<br>适用于图片懒加载场景。</p>
+        </div>
+      </div>
+
+      <div id="exploreUrlEditor" class="explore-editor hidden">
+        <div class="editor-toolbar">
+          <div class="toolbar-left">
+            <div class="toolbar-row toolbar-primary">
+              <button id="exploreCollectBtn" class="btn btn-primary">从页面收集元素</button>
+              <button id="exploreAddItemBtn" class="btn btn-action">手动添加</button>
+              <button id="exploreAddSeparatorBtn" class="btn btn-action">插入分隔</button>
+              <button id="exploreExportBtn" class="btn btn-action">导出 JSON</button>
             </div>
-          </details>
+            <div class="toolbar-row toolbar-batch">
+              <label class="batch-check-toggle"><input id="batchSelectToggle" type="checkbox" />开启复选</label>
+              <button id="batchSelectAllBtn" class="btn btn-action">全选</button>
+              <button id="batchInvertBtn" class="btn btn-action">反选</button>
+              <button id="batchLayoutBtn" class="btn btn-action">批量改 layout</button>
+              <button id="batchUrlBtn" class="btn btn-action">批量改 URL</button>
+              <button id="exploreClearBtn" class="btn btn-action btn-clear">清空</button>
+            </div>
+            <div class="toolbar-row toolbar-templates">
+              <button id="setDefaultTemplateBtn" class="btn btn-action">模板管理</button>
+              <button id="applyStyleBtn" class="btn btn-action">应用样式</button>
+            </div>
+          </div>
         </div>
-        <div class="modal-actions">
-          <button id="lazyGenerateBtn" class="btn btn-primary">生成</button>
-          <button id="lazyCancelBtn" class="btn btn-secondary">取消</button>
+        <div id="batchActionNotice" class="batch-action-notice hidden"></div>
+        <div class="editor-layout">
+          <div class="editor-cards" id="exploreCards"></div>
+          <div class="editor-props" id="exploreProps">
+            <div class="props-placeholder">选择卡片编辑样式</div>
+          </div>
+        </div>
+        <div id="exploreJsonModal" class="modal hidden">
+          <div class="modal-content">
+            <h3>发现页 URL JSON</h3>
+            <textarea id="exploreJsonOutput" class="input input--json" readonly></textarea>
+            <div class="modal-actions">
+              <button id="exploreCopyBtn" class="btn btn-primary">复制到剪贴板</button>
+              <button id="exploreCloseModalBtn" class="btn btn-secondary">关闭</button>
+            </div>
+          </div>
+        </div>
+        <div class="explore-preview-box">
+          <div class="explore-preview-header">
+            <label>发现页 URL 预览</label>
+            <div class="explore-format-toggle">
+              <button class="format-btn active" data-format="2">样式二</button>
+              <button class="format-btn" data-format="1">样式一</button>
+            </div>
+          </div>
+          <textarea id="exploreUrlPreview" class="input" rows="1" readonly></textarea>
+          <div id="exploreCollectionIndicator" class="explore-collection-indicator hidden">
+            <div class="indicator-step" id="exploreIndicatorStep">-</div>
+            <div class="indicator-element" id="exploreIndicatorElement">-</div>
+            <div class="indicator-shortcuts"><kbd>Enter</kbd> 完成收集</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="advancedPanel" class="advanced-panel hidden">
+        <div class="advanced-section">
+          <div class="advanced-section-head" style="justify-content: flex-start; gap: 8px">
+            <label class="advanced-label">源类型</label>
+            <select id="bookSourceTypeSelect" class="input input--sans" style="width: 80px">
+              <option value="0">文本</option>
+              <option value="1">音频</option>
+              <option value="2">图片</option>
+              <option value="3">文件</option>
+              <option value="4">视频</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="advanced-section">
+          <div style="display: flex; align-items: center; justify-content: space-between">
+            <label class="advanced-label">源名称</label>
+            <button id="autoFillBtn" class="btn btn-action" title="自动填充当前页面信息">自动填充</button>
+          </div>
+          <textarea id="bookSourceName" placeholder="源名称" class="input input--sans" rows="1"></textarea>
+        </div>
+
+        <div class="advanced-section">
+          <label class="advanced-label">源URL</label>
+          <textarea id="bookSourceUrl" placeholder="源URL" class="input input--sans" rows="1"></textarea>
+        </div>
+
+        <div class="advanced-section">
+          <label class="advanced-label">书籍URL正则</label>
+          <textarea id="bookUrlPattern" placeholder="书籍URL正则表达式" class="input input--sans" rows="1"></textarea>
+        </div>
+
+        <div class="advanced-section">
+          <label class="advanced-label">源注释</label>
+          <textarea id="bookSourceComment" placeholder="源注释" class="input input--sans" rows="1"></textarea>
+        </div>
+
+        <div class="advanced-section">
+          <div class="advanced-section-head">
+            <label class="advanced-label">请求头</label>
+            <div class="advanced-actions">
+              <button id="addUaHeaderBtn" class="btn btn-action btn-sm" type="button">写 电脑UA</button>
+              <button id="addMobileUaHeaderBtn" class="btn btn-action btn-sm" type="button">写 手机UA</button>
+              <button id="addRefererHeaderBtn" class="btn btn-action btn-sm" type="button">写 Referer</button>
+              <button id="addHeaderItemBtn" class="btn btn-action btn-sm" type="button">添加请求头</button>
+            </div>
+          </div>
+          <div id="advancedHeadersList" class="advanced-list"></div>
+        </div>
+
+        <div class="advanced-section">
+          <div class="advanced-section-head">
+            <label class="advanced-label">登录检查JS</label>
+            <button id="autoFillCfBtn" class="btn btn-action btn-sm" type="button">过CF盾</button>
+          </div>
+          <textarea id="loginCheckJs" class="input" rows="1" placeholder="登录检查JS脚本"></textarea>
+        </div>
+      </div>
+
+      <div class="step-indicator">
+        <div id="fieldStatusSummary" class="field-status-summary"></div>
+      </div>
+
+      <main class="form-area">
+        <div id="fieldContainer"></div>
+        <div id="pickerStatusContainer" class="picker-status-container hidden">
+          <div class="picker-status-step" id="pickerStatusStep">-</div>
+          <div class="picker-status-element" id="pickerStatusElement">-</div>
+          <div class="picker-status-shortcuts">
+            <kbd>Esc</kbd> 取消 &nbsp; <kbd>↑↓←→</kbd> 导航 &nbsp; <kbd>Enter</kbd> 确认
+          </div>
+        </div>
+        <div id="exploreCollectionStatus" class="explore-collection-status hidden">
+          <div class="status-text">
+            <span class="status-icon">●</span>
+            <span id="exploreStatusMessage">收集中...</span>
+          </div>
+          <div class="status-count">已收集: <span id="exploreCountDisplay">0</span> 项</div>
+          <button id="exploreStopCollectBtn" class="btn btn-action btn-stop-collect">停止收集</button>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="nav-buttons" id="navButtons">
+          <button id="prevBtn" class="btn btn-secondary" disabled>上一步</button>
+          <button id="nextBtn" class="btn btn-primary">下一步</button>
+        </div>
+        <button id="exportBtn" class="btn btn-success">导出 JSON</button>
+        <button id="resetBtn" class="btn btn-clear">重置所有</button>
+      </footer>
+
+      <div id="exportModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>导出 JSON</h3>
+          <textarea id="jsonOutput" class="input input--json" readonly></textarea>
+          <div class="modal-actions">
+            <button id="copyBtn" class="btn btn-primary">复制到剪贴板</button>
+            <button id="downloadBtn" class="btn btn-success">下载 JSON</button>
+            <button id="closeModalBtn" class="btn btn-secondary">关闭</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="updateModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>检查更新</h3>
+          <div class="update-info">
+            <p>当前版本: <strong id="currentVersion">-</strong></p>
+            <p>最新版本: <strong id="latestVersion">检查中...</strong></p>
+            <p id="updateStatus"></p>
+          </div>
+          <div class="update-links">
+            <a href="https://github.com/z1131392774/legado-source-generator" target="_blank" rel="noopener"
+              >GitHub 仓库</a
+            >
+            <a href="https://gitee.com/z1131392774/legado-source-generator" target="_blank" rel="noopener"
+              >Gitee 仓库</a
+            >
+          </div>
+          <div class="modal-actions">
+            <button id="closeUpdateBtn" class="btn btn-primary">关闭</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="batchLayoutModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>批量修改 layout 属性</h3>
+          <div class="batch-layout-grid">
+            <label
+              ><input type="checkbox" id="batchEnableFlexGrow" /> layout_flexGrow
+              <input type="number" id="batchFlexGrow" class="input input--50" value="1" step="1"
+            /></label>
+            <label
+              ><input type="checkbox" id="batchEnableFlexShrink" /> layout_flexShrink
+              <input type="number" id="batchFlexShrink" class="input input--50" value="0" step="1"
+            /></label>
+            <label
+              ><input type="checkbox" id="batchEnableAlignSelf" /> layout_alignSelf
+              <input type="text" id="batchAlignSelf" class="input input--50" value="auto"
+            /></label>
+            <label
+              ><input type="checkbox" id="batchEnableFlexBasis" /> layout_flexBasisPercent
+              <input type="number" id="batchFlexBasisPercent" class="input input--50" value="-1" step="0.1"
+            /></label>
+            <label
+              ><input type="checkbox" id="batchEnableWrapBefore" /> layout_wrapBefore
+              <input type="checkbox" id="batchWrapBefore"
+            /></label>
+          </div>
+          <div class="modal-actions">
+            <button id="batchLayoutApplyConfirmBtn" class="btn btn-primary">应用到已选</button>
+            <button id="batchLayoutCancelBtn" class="btn btn-secondary">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="batchUrlModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>批量修改 URL</h3>
+          <div class="batch-url-tabs" id="batchUrlTabs">
+            <button id="batchUrlTabTemplate" class="batch-url-tab active" data-mode="template">模板匹配</button>
+            <button id="batchUrlTabRegex" class="batch-url-tab" data-mode="regex">正则匹配</button>
+          </div>
+          <div id="batchUrlPanelTemplate" class="batch-url-panel">
+            <div class="batch-url-help">
+              <div class="title">模板匹配说明与示例</div>
+              <div>规则 1：如果链接里只有“页码数字”变化，`第一页差异` 留空。</div>
+              <div>
+                规则 2：如果第一页没有页码变量（或结构不同），`第一页差异` 填“分页链接里多出来的那一段（含页码）”。
+              </div>
+              <div>分类匹配模板怎么填：以“第一页 URL”为基准，把分类那段替换成 `分类`，其它部分保持不变。</div>
+              <div>翻页模板怎么填：以“第二页 URL”为基准，把分类那段替换成 `分类`，把页码数字替换成 `页码`。</div>
+              <div>示例 A（第一页与分页结构不同）：</div>
+              <div>第一页：`https://www.demo-site.com/fantasy/`</div>
+              <div>第二页：`https://www.demo-site.com/fantasy/index_2.html`</div>
+              <div>填写：</div>
+              <div>分类匹配模板：`https://www.demo-site.com/分类/`</div>
+              <div>翻页模板：`https://www.demo-site.com/分类/index_页码.html`</div>
+              <div>第一页差异：`index_页码.html`</div>
+              <div>示例 A-2（第一页是 index.html，分页是 index_2.html）：</div>
+              <div>第一页：`https://www.demo-site.com/fantasy/index.html`</div>
+              <div>第二页：`https://www.demo-site.com/fantasy/index_2.html`</div>
+              <div>填写：</div>
+              <div>分类匹配模板：`https://www.demo-site.com/分类/index.html`</div>
+              <div>翻页模板：`https://www.demo-site.com/分类/index_页码.html`</div>
+              <div>第一页差异：`index_页码.html`</div>
+              <div>示例 B（分类位 + 页码位都在 URL 中）：</div>
+              <div>第一页：`https://www.demo-site.com/tags-150-0.html`（150 是分类，0 是页码）</div>
+              <div>第二页：`https://www.demo-site.com/tags-150-1.html`</div>
+              <div>填写：</div>
+              <div>分类匹配模板：`https://www.demo-site.com/tags-分类-0.html`</div>
+              <div>翻页模板：`https://www.demo-site.com/tags-分类-页码.html`</div>
+              <div>第一页差异：留空</div>
+            </div>
+            <div class="batch-layout-grid template-grid batch-url-form">
+              <label
+                ><span>分类匹配模板</span
+                ><textarea
+                  id="batchCategoryPattern"
+                  class="input input--sans"
+                  rows="1"
+                  placeholder="https://www.example.com/分类/"
+                ></textarea>
+              </label>
+              <label
+                ><span>翻页模板</span
+                ><textarea
+                  id="batchPagedUrlTemplate"
+                  class="input input--sans"
+                  rows="1"
+                  placeholder="https://www.example.com/分类/页码.html"
+                ></textarea>
+              </label>
+              <label
+                ><span>第一页差异</span
+                ><textarea
+                  id="batchFirstPageDiff"
+                  class="input input--sans"
+                  rows="1"
+                  placeholder="页码.html（可选）"
+                ></textarea>
+              </label>
+            </div>
+          </div>
+          <div id="batchUrlPanelRegex" class="batch-url-panel hidden">
+            <div class="batch-layout-grid template-grid batch-url-form">
+              <label
+                ><span>正则表达式</span
+                ><textarea
+                  id="batchUrlPattern"
+                  class="input input--sans"
+                  rows="1"
+                  placeholder="如：/sort/xuanhuan/"
+                ></textarea>
+              </label>
+              <label
+                ><span>替换为</span
+                ><textarea
+                  id="batchUrlReplacement"
+                  class="input input--sans"
+                  rows="1"
+                  placeholder="如：/sort/分类/"
+                ></textarea>
+              </label>
+              <label><input type="checkbox" id="batchRegexGlobal" checked /> 全局替换（g）</label>
+              <label><input type="checkbox" id="batchRegexIgnoreCase" /> 忽略大小写（i）</label>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button id="batchUrlApplyConfirmBtn" class="btn btn-primary">应用到已选</button>
+            <button id="batchUrlCancelBtn" class="btn btn-secondary">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="styleTemplateModal" class="modal hidden">
+        <div class="modal-content">
+          <h3 id="styleTemplateModalTitle">新增样式模板</h3>
+          <input type="hidden" id="editingTemplateId" />
+          <div class="batch-layout-grid template-grid">
+            <label
+              >模板名称 <input type="text" id="templateName" class="input input--50" placeholder="如：三列紧凑"
+            /></label>
+            <label
+              >layout_flexGrow <input type="number" id="tplFlexGrow" class="input input--50" value="1" step="1"
+            /></label>
+            <label
+              >layout_flexShrink <input type="number" id="tplFlexShrink" class="input input--50" value="0" step="1"
+            /></label>
+            <label>layout_alignSelf <input type="text" id="tplAlignSelf" class="input input--50" value="auto" /></label>
+            <label
+              >layout_flexBasisPercent
+              <input type="number" id="tplFlexBasisPercent" class="input input--50" value="-1" step="0.1"
+            /></label>
+            <label>layout_wrapBefore <input type="checkbox" id="tplWrapBefore" /></label>
+          </div>
+          <div class="modal-actions">
+            <button id="templateSaveBtn" class="btn btn-primary">保存模板</button>
+            <button id="templateCancelBtn" class="btn btn-secondary">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="defaultTemplateModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>样式模板管理</h3>
+          <input id="templateSearchInput" class="input input--sans batch-modal-select" placeholder="搜索模板名称" />
+          <div id="templateManageList" class="template-manage-list"></div>
+          <div class="modal-actions">
+            <button id="templateManageAddBtn" class="btn btn-primary">新增模板</button>
+            <button id="defaultTemplateCancelBtn" class="btn btn-secondary">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="applyStyleModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>应用样式模板</h3>
+          <select id="applyTemplateSelect" class="input input--sans batch-modal-select"></select>
+          <div class="modal-actions">
+            <button id="applyTemplateConfirmBtn" class="btn btn-primary">应用到已选</button>
+            <button id="applyTemplateCancelBtn" class="btn btn-secondary">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="indexTutorialModal" class="modal hidden">
+        <div class="modal-content">
+          <h3>索引教程</h3>
+          <div class="index-tutorial-content">
+            <h4>什么时候使用索引？</h4>
+            <p>
+              当你选中一个元素后，预览区域会显示匹配到的结果。<strong
+                >只有在单个容器内出现了多个不需要的元素，需要筛选其中一部分时才使用索引。</strong
+              >
+            </p>
+            <p>
+              正常情况下，预览里显示很多条，但那是从<strong>不同容器</strong>中获取到的，属于正常结果，<strong>不需要使用索引</strong>。
+            </p>
+            <p class="index-tutorial-tip">💡 看不懂？那就先不要使用。如果抓取结果不符合预期，再回来尝试使用索引。</p>
+
+            <h4>怎么使用索引？</h4>
+            <p><strong>列表字段（范围）</strong></p>
+            <ul>
+              <li>正着数从 <strong>1</strong> 开始，1 就是第一个</li>
+              <li>负着数从末尾开始，<strong>-1</strong> 是倒数第一个，<strong>-2</strong> 是倒数第二个</li>
+              <li>区间是<strong>闭区间</strong>（包含两端）</li>
+              <li>例如 <code>[2, -2]</code>：从第 2 个取到倒数第 2 个（都包含），倒数第 1 个不在范围内</li>
+            </ul>
+            <p><strong>单值字段（单个位置）</strong></p>
+            <ul>
+              <li>输入正数：取正着数第 N 个</li>
+              <li>输入负数：取倒着数第 N 个</li>
+              <li>不填或填 1：取第一个（默认）</li>
+            </ul>
+          </div>
+          <div class="modal-actions">
+            <button id="closeIndexTutorialBtn" class="btn btn-primary">关闭</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="importModal" class="modal hidden">
+        <div class="modal-content import-modal">
+          <h3>
+            导入 JSON 配置 <button id="closeImportBtn" class="btn btn-icon import-close-btn" title="关闭">✕</button>
+          </h3>
+          <div class="import-json-input-section">
+            <label>📋 粘贴 JSON</label>
+            <textarea id="importJsonTextarea" class="input" rows="4" placeholder="在此粘贴 JSON 内容..."></textarea>
+            <div id="importJsonError" class="import-json-error hidden"></div>
+            <div class="import-or-divider">── 或 ──</div>
+            <button id="importFileBtn" class="btn btn-action">📁 选择文件</button>
+            <input type="file" id="importFileInput" accept=".json,application/json" style="display: none" />
+          </div>
+          <div id="importTreeSection" class="import-tree-section hidden">
+            <div class="import-tree-header">
+              <label>选择要导入的项：</label>
+              <div class="import-tree-actions">
+                <button id="importSelectAllBtn" class="btn btn-sm btn-secondary">全选</button>
+                <button id="importInvertBtn" class="btn btn-sm btn-secondary">反选</button>
+              </div>
+            </div>
+            <div id="importTreeContainer" class="import-tree"></div>
+          </div>
+          <div id="importWarningArea" class="import-warning-area"></div>
+          <div class="modal-actions">
+            <button id="cancelImportBtn" class="btn btn-secondary">取消</button>
+            <button id="confirmImportBtn" class="btn btn-primary" disabled>确认导入</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="lazyLoadModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="lazy-scroll">
+            <h3>懒加载等待模板配置</h3>
+            <div class="lazy-config">
+              <div class="lazy-row">
+                <label>元素选择器</label>
+                <input type="text" id="lazySelector" class="input input--sans" value="" placeholder="必填" />
+              </div>
+              <div class="lazy-row">
+                <label>检测目标</label>
+                <select id="lazyCheckTarget" class="input input--sans">
+                  <option value="html" selected>html (outerHTML)</option>
+                  <option value="text">text (innerText)</option>
+                </select>
+              </div>
+              <div class="lazy-row">
+                <label>必须匹配 <span class="lazy-hint">(正则，留空关闭)</span></label>
+                <input type="text" id="lazyExpect" class="input input--sans" placeholder="例：正文内容" />
+              </div>
+              <div class="lazy-row">
+                <label>排除匹配 <span class="lazy-hint">(正则，留空关闭)</span></label>
+                <input type="text" id="lazyReject" class="input input--sans" value="/加载中|loading|请稍候/i" />
+              </div>
+              <div class="lazy-row">
+                <label>自定义就绪检测 <span class="lazy-hint">(函数体，留空关闭)</span></label>
+                <input
+                  type="text"
+                  id="lazyReadyCheck"
+                  class="input input--sans"
+                  placeholder="例：el.querySelectorAll('img[src]').length > 0"
+                />
+              </div>
+              <div class="lazy-row lazy-row--checkbox">
+                <label><input type="checkbox" id="lazyNormalize" checked /> 压缩空白符 (仅 text 模式)</label>
+              </div>
+              <div class="lazy-row lazy-row--checkbox">
+                <label><input type="checkbox" id="lazyScroll" checked /> 首次滚动到底部</label>
+              </div>
+            </div>
+            <details class="lazy-tutorial">
+              <summary>使用说明</summary>
+              <div class="lazy-tutorial-content">
+                <p>此模板用于解决懒加载资源获取不到的问题。配置后生成脚本，阅读会反复执行直到正文页面就绪。</p>
+                <h4>参数说明</h4>
+                <p>
+                  <strong>元素选择器</strong><br />等待出现的 CSS 选择器，例如
+                  <code>.read-content</code
+                  >、<code>#chapter-content</code>。<br />如果正文内容字段已选择过元素，会自动填入。
+                </p>
+                <p>
+                  <strong>检测目标</strong><br /><code>html</code>：检查元素的 outerHTML（默认，适合大多数场景）<br /><code
+                    >text</code
+                  >：检查元素的 innerText（仅需匹配文字内容时使用）
+                </p>
+                <p>
+                  <strong>必须匹配</strong
+                  >（正则，留空关闭）<br />检测目标中必须包含的内容。成功匹配时，认为网页已就绪并返回页面 HTML。<br />留空表示不检查，直接返回。<br />例：<code
+                    >/正文/</code
+                  >
+                  — 页面包含"正文"二字时立即视为就绪。
+                </p>
+                <p>
+                  <strong>排除匹配</strong
+                  >（正则，留空关闭）<br />检测目标中不能包含的内容。匹配到则视为未就绪，继续等待。<br />默认：<code
+                    >/加载中|loading|请稍候/i</code
+                  >
+                  — 页面仍在加载时继续等待。
+                </p>
+                <p>
+                  <strong>自定义就绪检测</strong>（函数体，留空关闭）<br />填写后独占判断，正则不生效。返回
+                  <code>true</code> 表示就绪。<br />例：<code
+                    >el.querySelectorAll('img[src]:not([src^="data:"])').length &gt; 0</code
+                  ><br />等待图片全部加载完成（非 data URL）。
+                </p>
+                <p><strong>压缩空白符</strong><br />仅 text 模式生效。将连续空白符压缩为单个空格后再匹配。</p>
+                <p>
+                  <strong>首次滚动到底部</strong
+                  ><br />执行时先滚动到页面底部触发懒加载，下次执行再检查内容。<br />适用于图片懒加载场景。
+                </p>
+              </div>
+            </details>
+          </div>
+          <div class="modal-actions">
+            <button id="lazyGenerateBtn" class="btn btn-primary">生成</button>
+            <button id="lazyCancelBtn" class="btn btn-secondary">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quickInsertModal" class="modal hidden">
+        <div class="modal-content qi-modal-content" id="quickInsertModalContent"></div>
+      </div>
+
+      <div id="snippetFormModal" class="modal hidden">
+        <div class="modal-content snippet-form-modal-content">
+          <h3 id="snippetFormModalTitle">新增文本片段</h3>
+          <div class="snippet-form-field">
+            <label class="snippet-form-label">标签（可选）</label>
+            <textarea id="snippetFormLabel" class="input input--sans" rows="2" placeholder="标签（可选）"></textarea>
+          </div>
+          <div class="snippet-form-field">
+            <label class="snippet-form-label">文本内容</label>
+            <textarea id="snippetFormText" class="input" rows="4" placeholder="输入文本内容..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button id="snippetFormSaveBtn" class="btn btn-primary">保存</button>
+            <button id="snippetFormCancelBtn" class="btn btn-secondary">取消</button>
+          </div>
         </div>
       </div>
     </div>
-
-    <div id="quickInsertModal" class="modal hidden">
-      <div class="modal-content qi-modal-content" id="quickInsertModalContent"></div>
-    </div>
-
-    <div id="snippetFormModal" class="modal hidden">
-      <div class="modal-content snippet-form-modal-content">
-        <h3 id="snippetFormModalTitle">新增文本片段</h3>
-        <div class="snippet-form-field">
-          <label class="snippet-form-label">标签（可选）</label>
-          <textarea id="snippetFormLabel" class="input input--sans" rows="2" placeholder="标签（可选）"></textarea>
-        </div>
-        <div class="snippet-form-field">
-          <label class="snippet-form-label">文本内容</label>
-          <textarea id="snippetFormText" class="input" rows="4" placeholder="输入文本内容..."></textarea>
-        </div>
-        <div class="modal-actions">
-          <button id="snippetFormSaveBtn" class="btn btn-primary">保存</button>
-          <button id="snippetFormCancelBtn" class="btn btn-secondary">取消</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-  <script src="batch-url-utils.js"></script>
-  <script src="import-utils.js"></script>
-  <script src="explore-url-editor.js"></script>
-  <script src="quick-insert.js"></script>
-  <script src="popup.js"></script>
-</body>
+    <script src="batch-url-utils.js"></script>
+    <script src="import-utils.js"></script>
+    <script src="explore-url-editor.js"></script>
+    <script src="quick-insert.js"></script>
+    <script src="popup.js"></script>
+  </body>
 </html>
